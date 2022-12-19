@@ -1,0 +1,252 @@
+:root {
+    --game-div-width: 450px;
+    --game-div-height: 70vh;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body .bg-img {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    top: 0;
+}
+
+.initial-page {
+    position: relative;
+    top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 150px;
+    height: 100%;
+    width: 100%;
+}
+
+
+
+.game-button-div {
+    row-gap: 15px;
+}
+
+
+.initial-page>* {
+    text-align: center;
+    margin: 0;
+}
+
+.initial-page h1 {
+    background: linear-gradient(90deg, rgba(255, 0, 0, 0.8), orange, rgba(0, 128, 0, 0.8), rgba(0, 0, 255, 0.8), rgba(0, 0, 0, 0.8), rgba(0, 0, 255, 0.8), rgba(0, 128, 0, 0.8), rgba(255, 166, 0, 0.8), rgba(255, 0, 0, 0.8));
+    color: white;
+    text-shadow: 0 0 5px black;
+    font-size: 8vh;
+    width: 100%;
+}
+
+.button-div {
+    display: flex;
+    justify-content: center;
+    column-gap: 15px;
+    min-width: var(--game-div-width);
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.flex-end {
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.button-div>* {
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    border: 1px;
+    border-radius: 10px;
+    padding: 5px 15px;
+    cursor: pointer;
+
+}
+
+#start-button {
+    background: rgba(0, 128, 0, 0.83);
+    padding: 1% 20px;
+    height: 14vh;
+    font-size: 6vh;
+    order: 1;
+}
+
+#restart-button {
+    background: rgba(255, 128, 0, 0.83);
+    order: -1;
+}
+
+#restart-button:hover {
+    background: black;
+    color: orange;
+    box-shadow: 0 0 10px orange;
+}
+
+#stop-button {
+    background: red;
+}
+
+#stop-button:hover {
+    background: black;
+    color: red;
+    box-shadow: 0 0 10px red;
+    /* border: 1px solid black; */
+}
+
+.hidden {
+    display: none;
+}
+
+.show {
+    display: initial;
+}
+
+#start-button:hover {
+    background: rgba(0, 0, 0, 1);
+    box-shadow: 0 0 25px orange;
+    color: orange;
+    font-weight: bold;
+}
+
+.game-div {
+    display: flex;
+    grid-template-columns: 1fr 5fr 1fr;
+    width: 100%;
+    max-width: 900px;
+    min-width: var(--game-div-width);
+    height: var(--game-div-height);
+    background: rgba(0, 0, 0, 0.9);
+    box-shadow: 0 0 20px orange;
+    border-radius: 5px;
+    border: 2px solid rgb(255, 77, 0)
+}
+
+.stats,
+.defeated-ships {
+    background: black;
+    height: var(--game-div-height);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.stats-div {
+    text-align: left;
+    padding-left: 10px;
+    color: white;
+    width: max-content;
+}
+
+.defeated-ships {
+    padding-right: 15px;
+    width: max-content;
+    position: relative;
+}
+
+
+.stats-div .ship-name {
+    color: orange;
+    border-bottom: 2px solid orange;
+    text-align: center;
+}
+
+.defeated-ships-title {
+    border-bottom: 2px solid rgb(2, 163, 2);
+    padding-bottom: 5px;
+    color: rgb(2, 163, 2);
+    width: max-content;
+    margin-bottom: 5px;
+}
+
+.ships-battle {
+    background: rgba(0, 0, 0, 1);
+    width: 100%;
+    height: var(--game-div-height);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ships-battle img {
+    width: 70%;
+    height: calc(100% / 3);
+    /* object-fit: cover; */
+    margin: 20px auto;
+
+
+}
+
+img.alien {
+    width: 90%;
+}
+
+#attack-button {
+    background: black;
+    margin-left: auto;
+    margin-bottom: 15px;
+    color: yellow;
+    width: max-content;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 1rem;
+    box-shadow: 0 0 20px yellow;
+    border: 0;
+
+}
+
+#attack-button:hover {
+    background: black;
+    box-shadow: 0 0 25px rgb(3, 255, 3);
+    color: rgb(6, 255, 6);
+
+}
+
+.destroyed-alien-ships {
+    color: red;
+    text-decoration: line-through;
+    margin: 0;
+    font-size: 15px;
+}
+
+.highlight {
+    position: absolute;
+    top: 15em;
+    background: white;
+    height: 18vh;
+    width: 92%;
+    display: block;
+    text-align: left;
+    padding-left: 5px;
+    overflow-y: auto;
+    background: black;
+    /* border: 1px solid rgba(20, 20, 20, 1); */
+}
+
+::-webkit-scrollbar {
+    width: 1px;
+}
+
+.my-ship-comment {
+    margin-left: 0;
+    padding-left: 0;
+    color: green;
+    border-bottom: 1px solid rgba(50, 50, 50, 1);
+}
+
+.para-div {
+    position: relative;
+    height: 100%;
+    border-bottom: 2px solid yellow;
+    border-top: 2px solid yellow;
+
+}

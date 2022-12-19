@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <title>Space Battle</title>
+</head>
+
+<body>
+    <img class="bg-img"
+        src="https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/space-battle-odysseas-stamoglou.jpg"
+        alt="space battle image">
+    <div class="initial-page">
+        <h1 class="initial-game-title">SPACE BATTLE</h1>
+        <div class="button-div ">
+            <button id="restart-button" class="hidden" type="button"
+                onclick="restart();createMyShip();createAlienShipList()">RESTART</button>
+            <button id="stop-button" class="hidden" type="button" onclick="closeTheGame()">CLOSE</button>
+            <button id="start-button" type="button" onclick="startTheGame()">START</button>
+        </div>
+    </div>
+</body>
+
+</html>
