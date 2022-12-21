@@ -18,7 +18,6 @@ body .bg-img {
 
 .initial-page {
     position: relative;
-    top: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -43,7 +42,7 @@ body .bg-img {
     background: linear-gradient(90deg, rgba(255, 0, 0, 0.8), orange, rgba(0, 128, 0, 0.8), rgba(0, 0, 255, 0.8), rgba(0, 0, 0, 0.8), rgba(0, 0, 255, 0.8), rgba(0, 128, 0, 0.8), rgba(255, 166, 0, 0.8), rgba(255, 0, 0, 0.8));
     color: white;
     text-shadow: 0 0 5px black;
-    font-size: 8vh;
+    font-size: 6vw;
     width: 100%;
 }
 
@@ -62,7 +61,7 @@ body .bg-img {
 }
 
 .button-div>* {
-    font-size: 14px;
+    font-size: 1.5vw;
     color: rgb(255, 255, 255);
     border: 1px;
     border-radius: 10px;
@@ -119,14 +118,13 @@ body .bg-img {
 .game-div {
     display: flex;
     grid-template-columns: 1fr 5fr 1fr;
-    width: 100%;
+    width: 90%;
     max-width: 900px;
-    min-width: var(--game-div-width);
-    height: var(--game-div-height);
+    height: 80vh;
     background: rgba(0, 0, 0, 0.9);
     box-shadow: 0 0 20px orange;
     border-radius: 5px;
-    border: 2px solid rgb(255, 77, 0)
+    border: 1px solid rgb(255, 77, 0)
 }
 
 .stats,
@@ -136,6 +134,7 @@ body .bg-img {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    column-gap: 10px;
     font-size: 14px;
 }
 
@@ -165,6 +164,8 @@ body .bg-img {
     color: rgb(2, 163, 2);
     width: max-content;
     margin-bottom: 5px;
+    width: 100%;
+    text-align: center;
 }
 
 .ships-battle {
@@ -193,6 +194,7 @@ img.alien {
 #attack-button {
     background: black;
     margin-left: auto;
+    margin-right: auto;
     margin-bottom: 15px;
     color: yellow;
     width: max-content;
@@ -219,16 +221,13 @@ img.alien {
 }
 
 .highlight {
-    position: absolute;
-    top: 15em;
-    background: white;
-    height: 18vh;
+    max-height: 10em;
     width: 92%;
-    display: block;
     text-align: left;
     padding-left: 5px;
     overflow-y: auto;
     background: black;
+    box-shadow: 0 0 5px rgba(50, 50, 50, 1);
     /* border: 1px solid rgba(20, 20, 20, 1); */
 }
 
@@ -236,17 +235,70 @@ img.alien {
     width: 1px;
 }
 
-.my-ship-comment {
+.comments {
+    border-top: 1px solid rgba(50, 50, 50, 1);
+    margin: 0;
+    padding: 5px 0;
     margin-left: 0;
     padding-left: 0;
+}
+
+.my-ship {
     color: green;
-    border-bottom: 1px solid rgba(50, 50, 50, 1);
+}
+
+.alien-ship {
+    color: red;
+}
+
+.destroyed {
+    color: yellow
 }
 
 .para-div {
-    position: relative;
-    height: 100%;
-    border-bottom: 2px solid yellow;
-    border-top: 2px solid yellow;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
 
+@media(max-width: 812px) {
+    .game-div {
+        height: 90vh;
+    }
+
+    .stats,
+    .defeated-ships {
+        background: black;
+        height: var(--game-div-height);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        column-gap: 10px;
+        font-size: 1.5vw;
+        width: 25%;
+        height: 90vh;
+    }
+
+    .stats-div {
+        text-align: left;
+        padding-left: 10px;
+        color: white;
+        width: 12vw;
+        margin: 10px auto;
+    }
+
+    .defeated-ships-title {
+        border-bottom: 2px solid rgb(2, 163, 2);
+        padding-bottom: 5px;
+        color: rgb(2, 163, 2);
+        width: max-content;
+        margin-bottom: 5px;
+        margin-top: 10px;
+        width: 100%;
+        text-align: center;
+    }
+
+    #attack-button {
+        font-size: 1.5vw;
+    }
 }
