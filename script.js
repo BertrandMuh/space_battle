@@ -44,8 +44,9 @@ const displayMyShipData = (myShipName, myHull, myFirepower, myAccuracy) => {
 
 }
 const displayAlienShipData = (alienName, alienHull, alienFirepower, alienAccuracy, alienShipImg) => {
-    //make sure the alien image is correct
-    getClassList('.alienShipImg')[0].src = alienShipImg;
+    //make sure the alien image is correctlet img = getClassList('.alienShipImg')[0];
+    let img = getClassList('.alienShipImg')[0];
+    img.src = alienShipImg;
     //retrieve the first and second element of the stats div
     let hullList = getClassList(".hull");
     let firepowerList = getClassList(".firepower");
@@ -99,7 +100,6 @@ const startTheGame = () => {
             }
         }
         let newImg = createNewElement('img');
-        newImg.setAttribute('class', 'battle-ship-img')
         //set the attributes for the two divs and images
         div.setAttribute("class", "stats-div");
         if (i == 0) {
@@ -163,6 +163,16 @@ const startTheGame = () => {
     //hide the start button
     retrieveElementByID("start-button").classList.toggle("hidden");
     //display all the game data on the page
+    let myImg = getClassList('.myShipImg')[0];
+    let aImg = getClassList('.alienShipImg')[0];
+    let pos = 0;
+    setInterval(() => {
+        if (pos < 20) {
+            pos++;
+            myImg.style.height = pos + '%';
+            aImg.style.height = pos + '%'
+        }
+    }, 10);
     displayMyShipData(myShip.name, myShip.hull, myShip.firepower, myShip.accuracy)
     displayAlienShipData(alienShipsArray[0].name, alienShipsArray[0].hull, alienShipsArray[0].firepower, alienShipsArray[0].accuracy, alienShipsArray[0].shipImage)
 }
@@ -172,6 +182,9 @@ const restart = () => {
     myMusic.pause();
     let checker = 0;
     let prompt;
+    let lastAlienShipHull = alienShipsArray[alienShipsArray.length - 1].hull;
+    let myImg = getClassList('.myShipImg')[0];
+    let aImg = getClassList('.alienShipImg')[0];
     do {
         prompt = window.prompt("Do you want to restart?(y/n)");
         if (prompt === null || prompt.toLowerCase() === 'n' || prompt.toLowerCase() === 'no') {
@@ -179,11 +192,17 @@ const restart = () => {
         }
         else if (prompt.toLowerCase() === 'y' || prompt.toLowerCase() === 'yes') {
             myMusic.currentTime = 0;
-            myMusic.play();
             checker = 1;
             startSound.play();
             let destroyedShips = getClassList('.destroyed-alien-ships');
-            let comments = getClassList('.comments')
+            let comments = getClassList('.comments');
+            if (myShip.hull <= 0 || lastAlienShipHull <= 0) {
+                getClassList('.highlight')[0].classList.toggle('hidden');
+                retrieveElementByID('attack-button').classList.toggle('hidden');
+                myImg.classList.toggle('hidden');
+                aImg.classList.toggle('hidden')
+            }
+
             destroyedShips.forEach(el => {
                 el.remove()
             });
@@ -198,10 +217,21 @@ const restart = () => {
             // getClassList(".alienShipImg")[0].src = alienShipsArray[0].shipImage;
             //display the new contents on the pages
             displayMyShipData(myShip.name, myShip.hull, myShip.firepower, myShip.accuracy);
-            displayAlienShipData(alienShipsArray[0].name, alienShipsArray[0].hull, alienShipsArray[0].firepower, alienShipsArray[0].accuracy, alienShipsArray[0].shipImage)
+            displayAlienShipData(alienShipsArray[0].name, alienShipsArray[0].hull, alienShipsArray[0].firepower, alienShipsArray[0].accuracy, alienShipsArray[0].shipImage);
+            let pos = 0;
+            setInterval(() => {
+                if (pos < 20) {
+                    pos++;
+                    myImg.style.height = pos + '%';
+                    aImg.style.height = pos + '%'
+                }
+            }, 10);
+            myMusic.play();
         }
     } while (checker !== 1);
-    myMusic.play();
+    if (myShip.hull > 0 && lastAlienShipHull > 0) {
+        myMusic.play();
+    }
 }
 //close the game
 const closeTheGame = () => {
@@ -219,7 +249,9 @@ const closeTheGame = () => {
             location.reload()
         }
     } while (checker !== 1);
-    myMusic.play();
+    if (myShip.hull > 0 && lastAlienShipHull > 0) {
+        myMusic.play();
+    }
 }
 //scroll to the bottom
 const scrollToTheBottom = () => {
@@ -251,15 +283,15 @@ const attackTheAlien = () => {
         button.setAttribute('disabled', 'disabled');
         button.textContent = 'RELOADING...'
         //generate random number for attack accurancy
-        let myAttackAccuracy = Math.random();
-        if (myAttackAccuracy < myShip.accuracy) {
+        let attackAccuracy = Math.random();
+        if (attackAccuracy < myShip.accuracy) {
             //reduce the alien hull
             myShip.attack(enemyShip);
             //remove disabled attribute after 5 seconds
             setTimeout(() => {
                 button.removeAttribute('disabled'),
                     button.innerText = 'ATTACK'
-            }, 5000)
+            }, 5500)
             //display comments and new data on the page
             highlightDelay('Attacking the alien ship...', 'my-ship comments', 0);
             highlightDelay('You have hit the alien ship!', 'my-ship comments', 1000);
@@ -274,42 +306,48 @@ const attackTheAlien = () => {
                     alienShipAttackSound.play()
                 }, 3000)
                 highlightDelay('The aliens are attacking...', 'alien-ship comments', 3000);
-                let alienAttackAccuracy = Math.random();
-                if (alienAttackAccuracy < enemyShip.accuracy) {
-                    //have the enemy attack
+                attackAccuracy = Math.random();
+                if (attackAccuracy < enemyShip.accuracy) {
+                    //have the enemy attack your ship
                     enemyShip.attack(myShip);
                     highlightDelay('You have been hit!', 'alien-ship comments', 4000);
-                    //display a message when your hull is less than 5 and greater than 0
+                    //display a message when your ship health is very low
                     if (myShip.hull < 5 && myShip.hull > 0) {
                         highlightDelay('YOU HAVE LESS THAN 5 HULL REMAINING', 'destroyed comments', 5000);
                     }
-                    //stop the game if your hull <= 0
+                    //stop the game when your ship is destroyed
                     else if (myShip.hull <= 0) {
-                        myShip.hull = 0;
-                        explosionSound.play()
+                        setTimeout(() => {
+                            getClassList('.myShipImg')[0].src = explosionImg;
+                            myShip.hull = 0;
+                            explosionSound.play()
+                        }, 5000);
+
                         highlightDelay('GAME OVER', 'comments destroyed', 5000);
                         setTimeout(() => {
                             myMusic.pause();
-                            getClassList('.highlight')[0].remove();
-                            button.remove();
-                            getClassList('.ships-battle')[0].remove()
-                        }, 5500);
+                            getClassList('.highlight')[0].classList.toggle('hidden');
+                            button.classList.toggle('hidden');
+                            getClassList('.myShipImg')[0].classList.toggle('hidden');
+                            getClassList('.alienShipImg')[0].classList.toggle('hidden')
+                        }, 6000);
                     }
                     setTimeout(() => {
                         displayMyShipData(myShip.name, myShip.hull, myShip.firepower, myShip.accuracy)
-                    }, 4000);
+                    }, 5000);
                 }
                 else {
                     highlightDelay('The aliens have missed!', 'comments destroyed', 4000);
                 }
             }
-            //do this if the alien ship hull is <= 0
+            //do this if the alien ship health is at zero or less
             else {
                 enemyShip.hull = 0;
                 highlightDelay(`The aliens ship ${currentAlienShip + 1} was destroyed.`, 'destroyed comments', 2000);
                 setTimeout(() => {
+                    getClassList('.alienShipImg')[0].src = explosionImg;
                     explosionSound.play()
-                }, 1500);
+                }, 2000);
                 //create a paragraph element to have the name of the defeated ship and append it into the destroyed ships div
                 let recentDefeatedShip = createNewElement('p');
                 recentDefeatedShip.setAttribute('class', 'destroyed-alien-ships');
@@ -318,42 +356,68 @@ const attackTheAlien = () => {
                 setTimeout(() => {
                     destroyedShips.appendChild(recentDefeatedShip);
                     currentAlienShip++;
+                    //display the new ship data on the page
                     if (currentAlienShip < alienShipsArray.length) {
                         enemyShip = alienShipsArray[currentAlienShip];
-                        displayAlienShipData(enemyShip.name, enemyShip.hull, enemyShip.firepower, enemyShip.accuracy, enemyShip.shipImage)
+                        displayAlienShipData(enemyShip.name, enemyShip.hull, enemyShip.firepower, enemyShip.accuracy, enemyShip.shipImage);
+                        let aImg = getClassList('.alienShipImg')[0];
+                        let pos = 0;
+                        setInterval(() => {
+                            if (pos < 20) {
+                                pos++;
+
+                                aImg.style.height = pos + '%'
+                            }
+                        }, 20);
                     }
+
                     else {
-                        highlightDelay('GAME OVER', 'comments destroyed', 2000);
+                        highlightDelay('GAME OVER', 'comments destroyed', 3000);
                         setTimeout(() => {
                             myMusic.pause();
-                            getClassList('.highlight')[0].remove();
-                            button.remove();
-                            getClassList('.ships-battle')[0].remove()
+                            getClassList('.highlight')[0].classList.toggle('hidden');
+                            button.classList.toggle('hidden');
+                            getClassList('.myShipImg')[0].classList.toggle('hidden');
+                            getClassList('.alienShipImg')[0].classList.toggle('hidden')
                         }, 2000);
                     }
-                }, 2000)
+                }, 4000)
             }
         }
+        //do this if your fire accuracy was not on point
         else {
             highlightDelay('You missed your target!', 'destroyed comments', 0);
             setTimeout(() => {
                 button.removeAttribute('disabled'),
                     button.innerText = 'ATTACK'
-            }, 3000)
+            }, 3000);
+            //have the alien attack your ship
             highlightDelay('The aliens are attacking...', 'alien-ship comments', 1000);
             alienShipAttackSound.play()
-            let alienAttackAccuracy = Math.random();
-            if (alienAttackAccuracy < enemyShip.accuracy) {
+            attackAccuracy = Math.random();
+            if (attackAccuracy < enemyShip.accuracy) {
                 enemyShip.attack(myShip);
                 highlightDelay('You have been hit!', 'alien-ship comments', 2000);
-                if (myShip.hull < 5 && myShip.hull > 0) {
+                if (myShip.hull < 3 && myShip.hull > 0) {
                     highlightDelay('YOU HAVE LESS THAN 5 HULL REMAINING', 'destroyed comments', 3000)
                 }
                 else if (myShip.hull <= 0) {
-                    explosionSound.play()
+                    setTimeout(() => {
+                        getClassList('.myShipImg')[0].src = explosionImg;
+                        explosionSound.play();
+                    }, 3000);
+                    button.setAttribute('disabled', 'disabled');
+                    highlightDelay('GAME OVER', 'comments destroyed', 3000);
+                    setTimeout(() => {
+                        myMusic.pause();
+                        getClassList('.highlight')[0].classList.toggle('hidden');
+                        button.classList.toggle('hidden');
+                        getClassList('.myShipImg')[0].classList.toggle('hidden');
+                        getClassList('.alienShipImg')[0].classList.toggle('hidden')
+                    }, 4000);
                 }
                 setTimeout(() => {
-                    displayMyShipData(myShip.name, myShip.hull, myShip.firepower, myShip.accuracy)
+                    displayMyShipData(myShip.name, myShip.hull, myShip.firepower, myShip.accuracy);
                 }, 3000);
             }
             else {
@@ -407,6 +471,7 @@ class AlienShips {
     }
 }
 //create some variables
+let explosionImg = 'https://media.istockphoto.com/id/539093422/photo/realistic-fiery-explosion-busting-over-a-black-background.jpg?s=612x612&w=0&k=20&c=lYgdLMR-4aNKqtEq4eR23qJi1h0oamPs3uaOXXuBbNI='
 let explosionSound = new Audio('./audios/explosion-sound.mp3');
 explosionSound.volume = 0.4;
 let alienShipAttackSound = new Audio('./audios/laser-gun.mp3');

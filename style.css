@@ -118,7 +118,7 @@ body .bg-img {
     width: 90%;
     padding: 0 10px;
     max-width: 800px;
-    height: 65vh;
+    height: var(--game-div-height);
     background: rgba(0, 0, 0, 0.9);
     box-shadow: 0 0 20px orange;
     border-radius: 5px;
@@ -160,11 +160,13 @@ body .bg-img {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    height: var(--game-div-height);
+    min-width: 170px;
 }
 
 .ships-battle img {
     width: 50%;
-    height: calc(100% / 3.5);
+    height: 0;
     /* object-fit: cover; */
     margin: 20px auto;
 
@@ -295,6 +297,7 @@ body .bg-img {
     .ships-battle {
         width: 100%;
         min-height: var(--min-height);
+        height: var(--height);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -306,7 +309,7 @@ body .bg-img {
     }
 }
 
-@media(max-width: 375px) {
+@media(max-width: 376px) {
     .ships-battle img {
         width: 100px;
         height: 110px;
@@ -343,7 +346,7 @@ body .bg-img {
     .ships-battle {
         width: max-content;
         margin: auto;
-        height: 100%;
+
     }
 
     #start-button {
