@@ -60,6 +60,8 @@ const displayAlienShipData = (alienName, alienHull, alienFirepower, alienAccurac
 }
 //change the page display when the start button is clicked
 const startTheGame = () => {
+    startSound.play()
+    myMusic.play();
     myShip = createMyShip();
     alienShipsArray = createAlienShipList();
     //create the main div for the game
@@ -165,34 +167,58 @@ const startTheGame = () => {
 }
 //restart the game
 const restart = () => {
-    let prompt = window.prompt("Do you want to restart?(y/n");
-    if (prompt.toLowerCase() == 'y' || prompt.toLowerCase() == 'yes') {
-        console.log(prompt)
-        let destroyedShips = getClassList('.destroyed-alien-ships');
-        let comments = getClassList('.comments')
-        destroyedShips.forEach(el => {
-            el.remove()
-        });
-        comments.forEach(el => {
-            el.remove()
-        })
-        currentAlienShip = 0;
-        //give the myShip and alienShipsArrav variables new values
-        myShip = createMyShip();
-        alienShipsArray = createAlienShipList();
-        //give the alien ship display at the start of the game the image of the first ship in the alien ships list
-        // getClassList(".alienShipImg")[0].src = alienShipsArray[0].shipImage;
-        //display the new contents on the pages
-        displayMyShipData(myShip.name, myShip.hull, myShip.firepower, myShip.accuracy);
-        displayAlienShipData(alienShipsArray[0].name, alienShipsArray[0].hull, alienShipsArray[0].firepower, alienShipsArray[0].accuracy, alienShipsArray[0].shipImage)
-    }
+    restartCloseButton.play()
+    myMusic.pause();
+    let checker = 0;
+    let prompt;
+    do {
+        prompt = window.prompt("Do you want to restart?(y/n)");
+        if (prompt === null || prompt.toLowerCase() === 'n' || prompt.toLowerCase() === 'no') {
+            checker = 1
+        }
+        else if (prompt.toLowerCase() === 'y' || prompt.toLowerCase() === 'yes') {
+            myMusic.currentTime = 0;
+            myMusic.play();
+            checker = 1;
+            startSound.play();
+            let destroyedShips = getClassList('.destroyed-alien-ships');
+            let comments = getClassList('.comments')
+            destroyedShips.forEach(el => {
+                el.remove()
+            });
+            comments.forEach(el => {
+                el.remove()
+            })
+            currentAlienShip = 0;
+            //give the myShip and alienShipsArrav variables new values
+            myShip = createMyShip();
+            alienShipsArray = createAlienShipList();
+            //give the alien ship display at the start of the game the image of the first ship in the alien ships list
+            // getClassList(".alienShipImg")[0].src = alienShipsArray[0].shipImage;
+            //display the new contents on the pages
+            displayMyShipData(myShip.name, myShip.hull, myShip.firepower, myShip.accuracy);
+            displayAlienShipData(alienShipsArray[0].name, alienShipsArray[0].hull, alienShipsArray[0].firepower, alienShipsArray[0].accuracy, alienShipsArray[0].shipImage)
+        }
+    } while (checker !== 1);
+    myMusic.play();
 }
 //close the game
 const closeTheGame = () => {
-    let prompt = window.prompt("Do you want to restart?(y/n");
-    if (prompt.toLowerCase() == 'y' || prompt.toLowerCase() == 'yes') {
-        location.reload()
-    }
+    restartCloseButton.play()
+    myMusic.pause();
+    let checker = 0
+    let prompt;
+    do {
+        prompt = window.prompt("Do you want to close the game?(y/n)");
+        if (prompt === null || prompt.toLowerCase() === 'n' || prompt.toLowerCase() === 'no') {
+            checker = 1
+        }
+        else if (prompt.toLowerCase() === 'y' || prompt.toLowerCase() === 'yes') {
+            checker = 1;
+            location.reload()
+        }
+    } while (checker !== 1);
+    myMusic.play();
 }
 //scroll to the bottom
 const scrollToTheBottom = () => {
@@ -215,17 +241,17 @@ const highlightDelay = (textContent, elementClass, time) => {
 };
 const attackTheAlien = () => {
     //attack the alienship
+    myShipAttackSound.play()
     let enemyShip = alienShipsArray[currentAlienShip];
+    let button = retrieveElementByID('attack-button');
+    button.setAttribute('disabled', 'disabled');
+    button.textContent = 'RELOADING...'
     if (currentAlienShip < alienShipsArray.length) {
         //attack first
         //generate random number for attack accurancy
         let myAttackAccuracy = Math.random();
         if (myAttackAccuracy < myShip.accuracy) {
             myShip.attack(enemyShip);
-            //disabled the attack button for a certain amount of time after it has been clicked to avoid double click
-            let button = retrieveElementByID('attack-button');
-            button.setAttribute('disabled', 'disabled');
-            button.textContent = 'RELOADING...'
             setTimeout(() => {
                 button.removeAttribute('disabled'),
                     button.innerText = 'ATTACK'
@@ -237,6 +263,9 @@ const attackTheAlien = () => {
             }, 2000)
             if (enemyShip.hull > 0) {
                 highlightDelay('The aliens ship survived!', 'alien-ship comments', 2000);
+                setTimeout(() => {
+                    alienShipAttackSound.play()
+                }, 3000)
                 highlightDelay('The aliens are attacking...', 'alien-ship comments', 3000);
                 let alienAttackAccuracy = Math.random();
                 if (alienAttackAccuracy < enemyShip.accuracy) {
@@ -259,7 +288,10 @@ const attackTheAlien = () => {
             //do this if the alien ship hull is <= 0
             else {
                 enemyShip.hull = 0;
-                highlightDelay(`The aliens ship ${currentAlienShip + 1} was destroyed.`, 'destroyed comments', 2000)
+                highlightDelay(`The aliens ship ${currentAlienShip + 1} was destroyed.`, 'destroyed comments', 2000);
+                setTimeout(() => {
+                    explosionSound.play()
+                }, 2500);
                 //alien ship attack when their hull is greater than zero after the attack
                 //create a paragraph element to have the name of the defeated ship and append it into the destroyed ships div
                 let recentDefeatedShip = createNewElement('p');
@@ -281,13 +313,21 @@ const attackTheAlien = () => {
         }
         else {
             highlightDelay('You missed your target!', 'destroyed comments', 0);
+            setTimeout(() => {
+                button.removeAttribute('disabled'),
+                    button.innerText = 'ATTACK'
+            }, 3000)
             highlightDelay('The aliens are attacking...', 'alien-ship comments', 1000);
+            alienShipAttackSound.play()
             let alienAttackAccuracy = Math.random();
             if (alienAttackAccuracy < enemyShip.accuracy) {
                 enemyShip.attack(myShip);
                 highlightDelay('You have been hit!', 'alien-ship comments', 2000);
-                if (myShip.hull < 5) {
+                if (myShip.hull < 5 && myShip.hull > 0) {
                     highlightDelay('YOU HAVE LESS THAN 5 HULL REMAINING', 'destroyed comments', 3000)
+                }
+                else if (myShip.hull <= 0) {
+                    explosionSound.play()
                 }
                 setTimeout(() => {
                     displayMyShipData(myShip.name, myShip.hull, myShip.firepower, myShip.accuracy)
@@ -299,8 +339,7 @@ const attackTheAlien = () => {
         }
     }
 }
-//create some variables
-let myShipImg = "./images/USS_Ship.png";
+
 //list of ship's picture
 let shipImageArray = ["https://media.istockphoto.com/id/1293657810/photo/unidentified-flying-object-clipping-path-included-ufo.jpg?s=612x612&w=0&k=20&c=XmgXeAuC4je0059vwN7J4K1IYHpPPPcnRT-B7yNFv1g=",
     "https://media.istockphoto.com/id/1346068917/photo/ufo-rotating-spacecraft-with-extraterrestrial-visitors-alien-flying-saucer-3d-rendering.jpg?s=612x612&w=0&k=20&c=4dCyQ-BkC0gThGHB7bbWHRvpT3eWuZ0NbcVjieku5ec=", "https://media.istockphoto.com/id/1190335915/photo/ufo-alien-spaceship-with-extraterrestrial-visitors-flying-saucer.jpg?s=612x612&w=0&k=20&c=AnMGz8--YEqdTMb5RoNbj-E7WIBP3ogbNfUijCFafp4=", "https://media.istockphoto.com/id/908964808/photo/ufo-alien-spaceship-with-extraterrestrial-visitors-flying-saucer.jpg?s=612x612&w=0&k=20&c=l-WU5k23F0ePQn25LdkOyMGSxtWMU93wxdIiUfLZLnY=", "https://media.istockphoto.com/id/1329080227/photo/3d-ufo-spacecraft-isolated-on-black.jpg?s=612x612&w=0&k=20&c=Jg2ghnhqAsUsg2FxDgqp6RRAsMaOChlWsx07uaMfAuI=", "https://media.istockphoto.com/id/499384093/photo/alien-mothership-in-deep-space-travel.jpg?s=612x612&w=0&k=20&c=tLs4ykWd_DKD10pmENCOljM8E2FKMEPl7RuxQko3sno=", "https://media.istockphoto.com/id/914151838/photo/ufo-alien-spaceship-isolated-on-black-background-flying-saucer-with-steampunk-look.jpg?s=612x612&w=0&k=20&c=AOBQIuFgaR1SMo5IvfIl8c8yhQdYFrXow4DnJtGq3ws=", "https://media.istockphoto.com/id/538338168/photo/science-fiction-interplanetary-spaceship-rear-angled-view.jpg?s=612x612&w=0&k=20&c=Ruj6gdOl7CZ2StEeUrlCeMMTPIyCz8FUO5f4FREBLc8="];
@@ -344,6 +383,24 @@ class AlienShips {
         }
     }
 }
+//create some variables
+let explosionSound = new Audio('./audios/explosion-sound.mp3');
+explosionSound.volume = 0.4;
+let alienShipAttackSound = new Audio('./audios/laser-gun.mp3');
+alienShipAttackSound.volume = 0.4;
+let myShipAttackSound = new Audio('./audios/blaster-2.mp3');
+myShipAttackSound.volume = 0.3;
+let restartCloseButton = new Audio('./audios/open-doors.mp3');
+restartCloseButton.volume = 0.3
+let startSound = new Audio('./audios/game-start.mp3');
+startSound.volume = 0.3
+let myMusic = new Audio("./audios/epic_battle_music.mp3");
+myMusic.volume = 0.3;
+myMusic.addEventListener('ended', function () {
+    this.currentTime = 0;
+    this.play();
+}, false);
+let myShipImg = "./images/USS_Ship.png";
 //create a variable to let you know you are in the alien ships list
 let currentAlienShip = 0;
 //give your ship a name
