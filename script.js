@@ -98,7 +98,8 @@ const startTheGame = () => {
                 div.appendChild(numericData)
             }
         }
-        let newImg = createNewElement('img')
+        let newImg = createNewElement('img');
+        newImg.setAttribute('class', 'battle-ship-img')
         //set the attributes for the two divs and images
         div.setAttribute("class", "stats-div");
         if (i == 0) {
@@ -239,29 +240,35 @@ const highlightDelay = (textContent, elementClass, time) => {
         scrollToTheBottom()
     }, time + 500);
 };
+
 const attackTheAlien = () => {
     //attack the alienship
-    myShipAttackSound.play()
     let enemyShip = alienShipsArray[currentAlienShip];
     let button = retrieveElementByID('attack-button');
-    button.setAttribute('disabled', 'disabled');
-    button.textContent = 'RELOADING...'
     if (currentAlienShip < alienShipsArray.length) {
-        //attack first
+        //play the attack sound and disabled the attack button
+        myShipAttackSound.play();
+        button.setAttribute('disabled', 'disabled');
+        button.textContent = 'RELOADING...'
         //generate random number for attack accurancy
         let myAttackAccuracy = Math.random();
         if (myAttackAccuracy < myShip.accuracy) {
+            //reduce the alien hull
             myShip.attack(enemyShip);
+            //remove disabled attribute after 5 seconds
             setTimeout(() => {
                 button.removeAttribute('disabled'),
                     button.innerText = 'ATTACK'
-            }, 4000)
+            }, 5000)
+            //display comments and new data on the page
             highlightDelay('Attacking the alien ship...', 'my-ship comments', 0);
             highlightDelay('You have hit the alien ship!', 'my-ship comments', 1000);
             setTimeout(() => {
                 displayAlienShipData(enemyShip.name, enemyShip.hull, enemyShip.firepower, enemyShip.accuracy, enemyShip.shipImage)
             }, 2000)
+            //if the enemy ship is not destroy after the attack
             if (enemyShip.hull > 0) {
+                //display a comment
                 highlightDelay('The aliens ship survived!', 'alien-ship comments', 2000);
                 setTimeout(() => {
                     alienShipAttackSound.play()
@@ -269,13 +276,24 @@ const attackTheAlien = () => {
                 highlightDelay('The aliens are attacking...', 'alien-ship comments', 3000);
                 let alienAttackAccuracy = Math.random();
                 if (alienAttackAccuracy < enemyShip.accuracy) {
+                    //have the enemy attack
                     enemyShip.attack(myShip);
                     highlightDelay('You have been hit!', 'alien-ship comments', 4000);
+                    //display a message when your hull is less than 5 and greater than 0
                     if (myShip.hull < 5 && myShip.hull > 0) {
                         highlightDelay('YOU HAVE LESS THAN 5 HULL REMAINING', 'destroyed comments', 5000);
                     }
-                    if (myShip.hull <= 0) {
+                    //stop the game if your hull <= 0
+                    else if (myShip.hull <= 0) {
+                        myShip.hull = 0;
+                        explosionSound.play()
                         highlightDelay('GAME OVER', 'comments destroyed', 5000);
+                        setTimeout(() => {
+                            myMusic.pause();
+                            getClassList('.highlight')[0].remove();
+                            button.remove();
+                            getClassList('.ships-battle')[0].remove()
+                        }, 5500);
                     }
                     setTimeout(() => {
                         displayMyShipData(myShip.name, myShip.hull, myShip.firepower, myShip.accuracy)
@@ -291,8 +309,7 @@ const attackTheAlien = () => {
                 highlightDelay(`The aliens ship ${currentAlienShip + 1} was destroyed.`, 'destroyed comments', 2000);
                 setTimeout(() => {
                     explosionSound.play()
-                }, 2500);
-                //alien ship attack when their hull is greater than zero after the attack
+                }, 1500);
                 //create a paragraph element to have the name of the defeated ship and append it into the destroyed ships div
                 let recentDefeatedShip = createNewElement('p');
                 recentDefeatedShip.setAttribute('class', 'destroyed-alien-ships');
@@ -306,7 +323,13 @@ const attackTheAlien = () => {
                         displayAlienShipData(enemyShip.name, enemyShip.hull, enemyShip.firepower, enemyShip.accuracy, enemyShip.shipImage)
                     }
                     else {
-                        highlightDelay('GAME OVER', 'comments destroyed', 2000)
+                        highlightDelay('GAME OVER', 'comments destroyed', 2000);
+                        setTimeout(() => {
+                            myMusic.pause();
+                            getClassList('.highlight')[0].remove();
+                            button.remove();
+                            getClassList('.ships-battle')[0].remove()
+                        }, 2000);
                     }
                 }, 2000)
             }

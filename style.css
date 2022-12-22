@@ -150,7 +150,6 @@ body .bg-img {
     padding-bottom: 5px;
     color: rgb(2, 163, 2);
     margin-bottom: 5px;
-
     text-align: center;
 }
 
@@ -258,6 +257,10 @@ body .bg-img {
         width: 90%;
     }
 
+    .button-div {
+        min-width: 90vw;
+    }
+
     .stats,
     .defeated-ships {
         background: black;
@@ -303,7 +306,7 @@ body .bg-img {
     }
 }
 
-@media(max-width: 380px) {
+@media(max-width: 375px) {
     .ships-battle img {
         width: 100px;
         height: 110px;
