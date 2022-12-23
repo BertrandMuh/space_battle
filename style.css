@@ -341,6 +341,7 @@ body .bg-img {
 
     .stats {
         width: max-content;
+        min-width: 70px;
     }
 
     .highlight {
@@ -354,7 +355,7 @@ body .bg-img {
     }
 
     .ships-battle {
-        width: 100%;
+        width: 95%;
         margin: auto;
 
     }
