@@ -162,9 +162,19 @@ body .bg-img {
     align-items: center;
     height: var(--game-div-height);
     min-width: 170px;
+    position: relative;
 }
 
-.ships-battle img {
+.result {
+    width: 100%;
+    color: yellow;
+    height: max-content;
+    margin: auto;
+    text-transform: uppercase;
+}
+
+.myShipImg,
+.alienShipImg {
     width: 50%;
     height: 0;
     /* object-fit: cover; */
@@ -344,7 +354,7 @@ body .bg-img {
     }
 
     .ships-battle {
-        width: max-content;
+        width: 100%;
         margin: auto;
 
     }

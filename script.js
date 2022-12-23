@@ -73,6 +73,7 @@ const startTheGame = () => {
     let defeatedShipsDiv = createNewElement("div");
     //set the attributes to the created divs
     newDiv.setAttribute("class", "game-div");
+
     statDiv.setAttribute("class", "stats");
     shipBattleDiv.setAttribute('class', 'ships-battle');
     defeatedShipsDiv.setAttribute('class', 'defeated-ships')
@@ -199,8 +200,10 @@ const restart = () => {
             if (myShip.hull <= 0 || lastAlienShipHull <= 0) {
                 getClassList('.highlight')[0].classList.toggle('hidden');
                 retrieveElementByID('attack-button').classList.toggle('hidden');
+                getClassList('.result')[0].remove()
                 myImg.classList.toggle('hidden');
-                aImg.classList.toggle('hidden')
+                aImg.classList.toggle('hidden');
+                getClassList('.myShipImg')[0].src = myShipImg
             }
 
             destroyedShips.forEach(el => {
@@ -235,6 +238,7 @@ const restart = () => {
 }
 //close the game
 const closeTheGame = () => {
+    let lastAlienShipHull = alienShipsArray[alienShipsArray.length - 1].hull;
     restartCloseButton.play()
     myMusic.pause();
     let checker = 0
@@ -317,6 +321,7 @@ const attackTheAlien = () => {
                     }
                     //stop the game when your ship is destroyed
                     else if (myShip.hull <= 0) {
+                        myShip.hull = 0;
                         setTimeout(() => {
                             getClassList('.myShipImg')[0].src = explosionImg;
                             myShip.hull = 0;
@@ -329,7 +334,11 @@ const attackTheAlien = () => {
                             getClassList('.highlight')[0].classList.toggle('hidden');
                             button.classList.toggle('hidden');
                             getClassList('.myShipImg')[0].classList.toggle('hidden');
-                            getClassList('.alienShipImg')[0].classList.toggle('hidden')
+                            getClassList('.alienShipImg')[0].classList.toggle('hidden');
+                            let cinema = createNewElement('div');
+                            cinema.setAttribute('class', 'result');
+                            cinema.textContent = 'The planet Earth has been conquered by the Aliens after our last ship was defeated.';
+                            getClassList('.ships-battle')[0].appendChild(cinema)
                         }, 6000);
                     }
                     setTimeout(() => {
@@ -365,12 +374,10 @@ const attackTheAlien = () => {
                         setInterval(() => {
                             if (pos < 20) {
                                 pos++;
-
                                 aImg.style.height = pos + '%'
                             }
                         }, 20);
                     }
-
                     else {
                         highlightDelay('GAME OVER', 'comments destroyed', 3000);
                         setTimeout(() => {
@@ -378,7 +385,13 @@ const attackTheAlien = () => {
                             getClassList('.highlight')[0].classList.toggle('hidden');
                             button.classList.toggle('hidden');
                             getClassList('.myShipImg')[0].classList.toggle('hidden');
-                            getClassList('.alienShipImg')[0].classList.toggle('hidden')
+                            getClassList('.alienShipImg')[0].classList.toggle('hidden');
+                            let cinema = createNewElement('div');
+                            cinema.setAttribute('class', 'result');
+                            cinema.textContent = 'The Aliens have been defeated. The planet Earth is safe.';
+                            getClassList('.ships-battle')[0].appendChild(cinema)
+
+
                         }, 2000);
                     }
                 }, 4000)
@@ -413,7 +426,11 @@ const attackTheAlien = () => {
                         getClassList('.highlight')[0].classList.toggle('hidden');
                         button.classList.toggle('hidden');
                         getClassList('.myShipImg')[0].classList.toggle('hidden');
-                        getClassList('.alienShipImg')[0].classList.toggle('hidden')
+                        getClassList('.alienShipImg')[0].classList.toggle('hidden');
+                        let cinema = createNewElement('div');
+                        cinema.setAttribute('class', 'result');
+                        cinema.textContent = 'The planet Earth has been conquered by the Aliens after our last ship was defeated.';
+                        getClassList('.ships-battle')[0].appendChild(cinema)
                     }, 4000);
                 }
                 setTimeout(() => {
