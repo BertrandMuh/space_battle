@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
+    <script src="app.js" defer></script>
     <title>Space Battle</title>
 </head>
 
@@ -13,13 +13,49 @@
     <img class="bg-img"
         src="https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/space-battle-odysseas-stamoglou.jpg"
         alt="space battle image">
-    <div class="initial-page">
-        <h1 class="initial-game-title">SPACE BATTLE</h1>
-        <div class="button-div ">
-            <button id="restart-button" class="hidden" type="button"
-                onclick="restart();createMyShip();createAlienShipList()">RESTART</button>
-            <button id="stop-button" class="hidden" type="button" onclick="closeTheGame()">CLOSE</button>
-            <button id="start-button" type="button" onclick="startTheGame()">START</button>
+    <div id="body">
+        <h1 id="game-title">SPACE BATTLE</h1>
+        <div id="main">
+            <div id="button-div">
+                <button id="restart-button" class="button hidden" type="button">RESTART</button>
+                <button id="close-button" class="button hidden" type="button">CLOSE</button>
+                <button id="start-button" class="button" type="button">START</button>
+            </div>
+            <div id="game-div" class="game-div hidden">
+                <div class="game-data">
+                    <div class="alien-data">
+                        <p class="alien-ship name">Alien Ship 1</p>
+                        <p class="hull">Hull: </p>
+                        <p class="firepower">Firepower: </p>
+                        <p class="accuracy">Accuracy: </p>
+                    </div>
+                    <div class="my-data">
+                        <p class="my-ship name">USS</p>
+                        <p class="hull">Hull: </p>
+                        <p class="firepower">Firepower: </p>
+                        <p class="accuracy">Accuracy: </p>
+                    </div>
+                </div>
+                <div class="game-img">
+                    <div id="alien" class="ship-img">
+                        <img id="alien-img" src="" alt="">
+                    </div>
+                    <div id="my" class="ship-img">
+                        <img id="my-img" src="./images/USS_Ship.png" alt="">
+                    </div>
+                </div>
+                <div class="game-comments">
+                    <div id="defeated-ships">
+                        <p class="defeated-ships-title">
+                            Defeated Ships
+                        </p>
+                        <div id="destroyed-ships"></div>
+                    </div>
+                    <div id="highlight"></div>
+                    <button id="attack-button" type="button">ATTACK</button>
+                </div>
+            </div>
+            <div id="outcome" class="game-div outcome hidden"></div>
         </div>
     </div>
 </body>
