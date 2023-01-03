@@ -257,10 +257,6 @@
 
 @media(max-width:710px) {
 
-    #Main {
-        margin: 0;
-    }
-
     #restart-button,
     #close-button {
         font-size: 2vw;
@@ -308,7 +304,7 @@
         }
 
         #main {
-            margin-top: 0;
+            margin-top: 40%;
         }
 
         #start-button {

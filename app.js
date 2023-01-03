@@ -152,7 +152,7 @@ const startTheGame = () => {
     let gameContainer = getElementById('game-div');
     gameContainer.classList.toggle('hidden');
     let mainContainer = getElementById('main');
-    mainContainer.style.marginTop = '20px';
+    mainContainer.style.marginTop = '5px';
     let buttonList = getElementsByClassName('button');
     buttonList.forEach(button => {
         button.classList.toggle('hidden');
