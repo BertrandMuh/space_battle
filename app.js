@@ -1,6 +1,6 @@
 
 //create some variables
-let explosionImg = 'https://media.istockphoto.com/id/539093422/photo/realistic-fiery-explosion-busting-over-a-black-background.jpg?s=612x612&w=0&k=20&c=lYgdLMR-4aNKqtEq4eR23qJi1h0oamPs3uaOXXuBbNI='
+let explosionImg = './images/explosion.png'
 let explosionSound = new Audio('./audios/explosion-sound.mp3');
 explosionSound.volume = 0.4;
 let alienShipAttackSound = new Audio('./audios/laser-gun.mp3');
@@ -89,6 +89,7 @@ const scrollToTheBottom = () => {
     lastChild.scrollIntoView()
     // container.scrollIntoView(false);
 }
+//add comment to the page
 const highlightDelay = (textContent, elementClass, time) => {
     let paragraph = document.createElement('p');
     paragraph.setAttribute('class', elementClass);
@@ -101,32 +102,37 @@ const highlightDelay = (textContent, elementClass, time) => {
         scrollToTheBottom()
     }, time + 500);
 };
-//function to create my new ship and new alien ships
+//function to create my new ship
 const createMyShip = () => {
     let myShip = new Ship(myShipName)
     return myShip
 }
+//create new alien ships and return a list
 const createAlienShipList = () => {
     let alienShips = new AlienShips;
     alienShips.addShipToList(alienShipName);
     let alienShipsArray = alienShips.ships
     return alienShipsArray;
 }
-//function to get myship and the alien ship data and display them into the page
+const disableButton = (button) => {
+    button.setAttribute('disabled', 'disabled')
+}
+const enableButton = (button) => {
+    button.removeAttribute('disabled');
+}
+//display my data data on the page
 const displayMyShipData = (myShipName, myHull, myFirepower, myAccuracy) => {
     //retrieve the first and second element of the stats div
     let hull = getElementsByClassName("hull")[1];
     let firepower = getElementsByClassName("firepower")[1];
     let accuracy = getElementsByClassName("accuracy")[1];
     let shipName = getElementsByClassName("name")[1]
-
-    //for my ship
     shipName.textContent = `${myShipName}`;
     hull.textContent = `Hull : ${myHull}`;
     firepower.textContent = `Firepower : ${myFirepower}`;
     accuracy.textContent = `Accuracy ${myAccuracy}`;
-
 }
+//display the alien ship data on the page
 const displayAlienShipData = (alienName, alienHull, alienFirepower, alienAccuracy, alienShipImg) => {
     //make sure the alien image is correct
     let img = getElementById('alien-img');
@@ -142,12 +148,22 @@ const displayAlienShipData = (alienName, alienHull, alienFirepower, alienAccurac
     firepower.textContent = `Firepower : ${alienFirepower}`;
     accuracy.textContent = `Accuracy : ${alienAccuracy}`;
 }
-
+const resumeTheGame = () => {
+    if (!resume.classList.contains('hidden')) {
+        resume.classList.toggle('hidden');
+        enableButton(attackButton)
+        myMusic.play()
+    }
+}
 const startTheGame = () => {
-    startSound.play()
+    startSound.play();
     myMusic.play();
     myShip = createMyShip();
     alienShipsArray = createAlienShipList();
+    if (!resume.classList.contains('hidden')) {
+        resume.classList.toggle('hidden');
+        enableButton(attackButton);
+    }
     //show the game container and adjust the top of the button div
     let gameContainer = getElementById('game-div');
     gameContainer.classList.toggle('hidden');
@@ -181,13 +197,15 @@ const restart = () => {
     let gameContainer = getElementById('game-div')
     let myImg = getElementById('my');
     let aImg = getElementById('alien');
+    if (resume.classList.contains('hidden')) {
+        resume.classList.toggle('hidden');
+        disableButton(attackButton)
+    }
+
     do {
         prompt = window.prompt("Do you want to restart?(y/n)");
         if (prompt === null || prompt.toLowerCase() === 'n' || prompt.toLowerCase() === 'no') {
             checker = 1
-            if (myShip.hull > 0 && lastAlienShipHull > 0) {
-                myMusic.play();
-            }
         }
         else if (prompt.toLowerCase() === 'y' || prompt.toLowerCase() === 'yes') {
             myMusic.currentTime = 0;
@@ -207,6 +225,7 @@ const restart = () => {
             outcomeResult.forEach(child => {
                 child.remove()
             })
+
             if (outcome.classList.contains('hidden') === false) {
                 outcome.classList.toggle('hidden');
                 gameContainer.classList.toggle('hidden')
@@ -235,13 +254,14 @@ const closeTheGame = () => {
     myMusic.pause();
     let checker = 0
     let prompt;
+    if (resume.classList.contains('hidden')) {
+        resume.classList.toggle('hidden');
+        disableButton(attackButton);
+    }
     do {
         prompt = window.prompt("Do you want to close the game?(y/n)");
         if (prompt === null || prompt.toLowerCase() === 'n' || prompt.toLowerCase() === 'no') {
             checker = 1
-            if (myShip.hull > 0 && lastAlienShipHull > 0) {
-                myMusic.play();
-            }
         }
         else if (prompt.toLowerCase() === 'y' || prompt.toLowerCase() === 'yes') {
             checker = 1;
@@ -253,12 +273,14 @@ const closeTheGame = () => {
 const attackTheAlien = () => {
     //attack the alienship
     let enemyShip = alienShipsArray[currentAlienShip];
-    let button = getElementById('attack-button');
+
     if (currentAlienShip < alienShipsArray.length) {
         //play the attack sound and disabled the attack button
         myShipAttackSound.play();
-        button.setAttribute('disabled', 'disabled');
-        button.textContent = 'RELOADING...'
+        disableButton(attackButton);
+        disableButton(restartButton);
+        disableButton(closeButton);
+        attackButton.textContent = 'RELOADING...'
         //generate random number for attack accurancy
         let attackAccuracy = Math.random();
         if (attackAccuracy < myShip.accuracy) {
@@ -266,8 +288,10 @@ const attackTheAlien = () => {
             myShip.attack(enemyShip);
             //remove disabled attribute after 5 seconds
             setTimeout(() => {
-                button.removeAttribute('disabled'),
-                    button.innerText = 'ATTACK'
+                enableButton(attackButton);
+                enableButton(restartButton);
+                enableButton(closeButton)
+                attackButton.innerText = 'ATTACK'
             }, 6000)
             //display comments and new data on the page
             highlightDelay('Attacking the alien ship...', 'my-ship comments', 0);
@@ -373,8 +397,10 @@ const attackTheAlien = () => {
         else {
             highlightDelay('You missed your target!', 'destroyed comments', 0);
             setTimeout(() => {
-                button.removeAttribute('disabled'),
-                    button.innerText = 'ATTACK'
+                enableButton(attackButton);
+                enableButton(closeButton);
+                enableButton(restartButton);
+                attackButton.innerText = 'ATTACK'
             }, 3000);
             //have the alien attack your ship
             highlightDelay('The aliens are attacking...', 'alien-ship comments', 1000);
@@ -392,7 +418,7 @@ const attackTheAlien = () => {
                         explosionSound.play();
                         myShip.hull = 0;
                     }, 3000);
-                    button.setAttribute('disabled', 'disabled');
+                    disableButton(attackButton);
                     highlightDelay('GAME OVER', 'comments destroyed', 3000);
                     setTimeout(() => {
                         myMusic.pause();
@@ -417,6 +443,8 @@ const attackTheAlien = () => {
 }
 
 //set some events listener
+
+
 const startButton = getElementById('start-button');
 startButton.addEventListener('click', startTheGame);
 const closeButton = getElementById('close-button');
@@ -424,4 +452,15 @@ closeButton.addEventListener('click', closeTheGame);
 const restartButton = getElementById('restart-button');
 restartButton.addEventListener('click', restart);
 const attackButton = getElementById('attack-button');
-attackButton.addEventListener('click', attackTheAlien)
+attackButton.addEventListener('click', attackTheAlien);
+const resume = getElementById('resume');
+setInterval(() => {
+    if (!window.document.hasFocus()) {
+        if (resume.classList.contains('hidden')) {
+            resume.classList.toggle('hidden');
+            myMusic.pause();
+            disableButton(attackButton);
+        }
+    }
+});
+resume.addEventListener('click', resumeTheGame)
