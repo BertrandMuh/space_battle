@@ -199,9 +199,8 @@ const restart = () => {
     let aImg = getElementById('alien');
     if (resume.classList.contains('hidden')) {
         resume.classList.toggle('hidden');
-        disableButton(attackButton)
     }
-
+    disableButton(attackButton)
     do {
         prompt = window.prompt("Do you want to restart?(y/n)");
         if (prompt === null || prompt.toLowerCase() === 'n' || prompt.toLowerCase() === 'no') {
@@ -230,6 +229,10 @@ const restart = () => {
                 outcome.classList.toggle('hidden');
                 gameContainer.classList.toggle('hidden')
             }
+            if (!resume.classList.contains('hidden')) {
+                resume.classList.toggle('hidden');
+            }
+            enableButton(attackButton)
             //give the myShip and alienShipsArrav variables new values
             myShip = createMyShip();
             alienShipsArray = createAlienShipList();
@@ -256,8 +259,8 @@ const closeTheGame = () => {
     let prompt;
     if (resume.classList.contains('hidden')) {
         resume.classList.toggle('hidden');
-        disableButton(attackButton);
     }
+    disableButton(attackButton)
     do {
         prompt = window.prompt("Do you want to close the game?(y/n)");
         if (prompt === null || prompt.toLowerCase() === 'n' || prompt.toLowerCase() === 'no') {
@@ -437,14 +440,13 @@ const attackTheAlien = () => {
             }
             else {
                 highlightDelay('The aliens have missed!', 'comments destroyed', 2000);
+                return true;
             }
         }
     }
 }
 
 //set some events listener
-
-
 const startButton = getElementById('start-button');
 startButton.addEventListener('click', startTheGame);
 const closeButton = getElementById('close-button');
@@ -452,15 +454,15 @@ closeButton.addEventListener('click', closeTheGame);
 const restartButton = getElementById('restart-button');
 restartButton.addEventListener('click', restart);
 const attackButton = getElementById('attack-button');
-attackButton.addEventListener('click', attackTheAlien);
-const resume = getElementById('resume');
+attackButton.addEventListener('click', attackTheAlien)
 setInterval(() => {
-    if (!window.document.hasFocus()) {
-        if (resume.classList.contains('hidden')) {
-            resume.classList.toggle('hidden');
-            myMusic.pause();
-            disableButton(attackButton);
-        }
+    //pause the game when the player click outside of the window
+    if (!window.document.hasFocus() && !attackButton.hasAttribute('disabled') && resume.classList.contains('hidden')) {
+        resume.classList.toggle('hidden');
+        myMusic.pause();
+        disableButton(attackButton);
     }
 });
+
+const resume = getElementById('resume');
 resume.addEventListener('click', resumeTheGame)

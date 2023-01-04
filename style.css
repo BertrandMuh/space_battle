@@ -185,6 +185,7 @@
 .destroyed-alien-ships {
     color: red;
     text-decoration: line-through;
+    font-size: 12px;
 }
 
 .defeated-ships-title {
@@ -205,14 +206,14 @@
 }
 
 #highlight {
-    max-width: 95%;
+    max-width: 80%;
     max-height: 100px;
-    height: auto;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     row-gap: 5px;
-    margin-top: 80%;
+    margin: auto;
+    /* margin-top: 80%; */
 }
 
 .destroyed {
@@ -233,7 +234,7 @@
     text-align: left;
     margin-left: 5px;
     width: 95%;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .alien-ship {
@@ -248,7 +249,7 @@
     background: black;
     margin-left: auto;
     margin-right: auto;
-    margin-top: auto;
+    margin-top: 1%;
     color: yellow;
     width: max-content;
     padding: 10px 15px;
@@ -274,6 +275,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-bottom: 10%;
 }
 
 #resume:hover {
