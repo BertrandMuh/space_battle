@@ -294,7 +294,7 @@ const attackTheAlien = () => {
                 enableButton(attackButton);
                 enableButton(restartButton);
                 enableButton(closeButton)
-                attackButton.innerText = 'ATTACK'
+                attackButton.innerText = 'FIRE'
             }, 6000)
             //display comments and new data on the page
             highlightDelay('Attacking the alien ship...', 'my-ship comments', 0);
@@ -403,7 +403,7 @@ const attackTheAlien = () => {
                 enableButton(attackButton);
                 enableButton(closeButton);
                 enableButton(restartButton);
-                attackButton.innerText = 'ATTACK'
+                attackButton.innerText = 'FIRE'
             }, 3000);
             //have the alien attack your ship
             highlightDelay('The aliens are attacking...', 'alien-ship comments', 1000);
