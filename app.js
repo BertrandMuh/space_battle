@@ -1,5 +1,10 @@
 
 //create some variables
+let startButton;
+let restartButton;
+let closeButton;
+let attackButton;
+let resume;
 let explosionImg = './images/explosion.png'
 let explosionSound = new Audio('./audios/explosion-sound.mp3');
 explosionSound.volume = 0.4;
@@ -69,7 +74,6 @@ class AlienShips {
         }
     }
 }
-
 //create fucntion to simplify your code
 const getElementById = (id) => {
     return document.getElementById(id)
@@ -169,10 +173,9 @@ const startTheGame = () => {
     gameContainer.classList.toggle('hidden');
     let mainContainer = getElementById('main');
     mainContainer.style.marginTop = '5px';
-    let buttonList = getElementsByClassName('button');
-    buttonList.forEach(button => {
-        button.classList.toggle('hidden');
-    });
+    closeButton.classList.toggle('hidden');
+    restartButton.classList.toggle('hidden')
+    startButton.classList.toggle('hidden')
     displayMyShipData(myShip.name, myShip.hull, myShip.firepower, myShip.accuracy)
     displayAlienShipData(alienShipsArray[0].name, alienShipsArray[0].hull, alienShipsArray[0].firepower, alienShipsArray[0].accuracy, alienShipsArray[0].shipImage);
     let myImg = getElementById('my');
@@ -286,6 +289,7 @@ const attackTheAlien = () => {
         attackButton.textContent = 'RELOADING...'
         //generate random number for attack accurancy
         let attackAccuracy = Math.random();
+        let myShield = Math.random();
         if (attackAccuracy < myShip.accuracy) {
             //reduce the alien hull
             myShip.attack(enemyShip);
@@ -447,13 +451,13 @@ const attackTheAlien = () => {
 }
 
 //set some events listener
-const startButton = getElementById('start-button');
+startButton = getElementById('start-button');
 startButton.addEventListener('click', startTheGame);
-const closeButton = getElementById('close-button');
+closeButton = getElementById('close-button');
 closeButton.addEventListener('click', closeTheGame);
-const restartButton = getElementById('restart-button');
+restartButton = getElementById('restart-button');
 restartButton.addEventListener('click', restart);
-const attackButton = getElementById('attack-button');
+attackButton = getElementById('attack-button');
 attackButton.addEventListener('click', attackTheAlien)
 setInterval(() => {
     //pause the game when the player click outside of the window
@@ -464,5 +468,6 @@ setInterval(() => {
     }
 });
 
-const resume = getElementById('resume');
+resume = getElementById('resume');
 resume.addEventListener('click', resumeTheGame)
+

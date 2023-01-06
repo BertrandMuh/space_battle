@@ -110,7 +110,7 @@
 
 .game-div {
     display: grid;
-    grid-template-columns: 1.2fr 3.5fr 1.2fr;
+    grid-template-columns: 1.2fr 3.5fr 1.4fr;
     grid-template-rows: 1fr;
     width: 99%;
     max-height: 500px;
@@ -122,7 +122,6 @@
     background: black;
     color: white;
     overflow-y: hidden;
-
 }
 
 .game-div>* {
@@ -141,7 +140,9 @@
     width: 100%;
 }
 
-.game-data>div>p {
+
+
+.game-data>* {
     margin-left: 5px;
 }
 
@@ -150,7 +151,6 @@
     color: orange;
     border-bottom: 2px solid orange;
     margin-bottom: 5px;
-    margin-left: 5px;
 }
 
 .outcome {
@@ -179,9 +179,9 @@
 #defeated-ships {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: right;
     justify-content: center;
-    margin-right: 5px;
+    margin-right: 0;
 }
 
 .destroyed-alien-ships {
@@ -195,6 +195,7 @@
     font-size: 25px;
     color: rgb(5, 190, 5);
     width: max-content;
+    margin: auto;
     margin-bottom: 10px;
 }
 
@@ -223,7 +224,7 @@
 }
 
 ::-webkit-scrollbar {
-    width: 1px;
+    width: 0;
 }
 
 .comments {
@@ -237,6 +238,10 @@
     margin-left: 5px;
     width: 95%;
     font-size: 12px;
+}
+
+.game-comments {
+    margin-right: 0
 }
 
 .alien-ship {
@@ -254,7 +259,7 @@
     margin-bottom: 10px;
     color: yellow;
     width: max-content;
-    padding: 10px 15px;
+    padding: 10px 10px;
     font-size: 14px;
     border-radius: 2rem;
     box-shadow: 0 0 20px yellow;
@@ -264,7 +269,7 @@
     align-items: center;
 }
 
-#resume {
+.fa.fa-play-circle {
     color: red;
     background: transparent;
     width: max-content;
@@ -321,11 +326,12 @@
 
     .defeated-ships-title {
         font-size: 3vw;
+        margin-bottom: 1vw;
     }
 
     #attack-button {
         font-size: 2.2vw;
-        padding: 2vw 3vw;
+        padding: 2vw 2vw;
     }
 
     @media(max-height: 812px) {
@@ -349,13 +355,7 @@
     }
 }
 
-
-.hidden {
-    display: none;
-}
-
-#resume.hidden,
-#close-button.hidden,
-#restart-button.hidden {
+.hidden,
+.fa.hidden {
     display: none;
 }
