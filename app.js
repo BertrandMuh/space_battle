@@ -198,6 +198,7 @@ const startTheGame = () => {
 }
 
 const restart = () => {
+    getElementById('my-img').src = myShipImg;
     restartCloseButton.play()
     myMusic.pause();
     let checker = 0;
@@ -299,10 +300,16 @@ const attackTheAlien = () => {
         attackButton.textContent = 'RELOADING...'
         //generate random number for attack accurancy
         let attackAccuracy = Math.random();
-        let myShield = Math.random();
         if (attackAccuracy < myShip.accuracy) {
+            //create a logic for a shield when activated, increase the firepower of your ship and strenghen your defense.
+            let myShield = Math.random();
+            if (myShield < 0.3) {
+                myShip.firepower += randomNumber(1, 3);
+                highlightDelay(`Your ship shield has been activated and your firepower increased to ${myShip.firepower}`, 'destroyed comments', 0);
+            }
             //reduce the alien hull
             myShip.attack(enemyShip);
+            myShip.firepower = 5;
             //remove disabled attribute after 5 seconds
             setTimeout(() => {
                 enableButton(attackButton);
