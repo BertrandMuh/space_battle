@@ -119,7 +119,7 @@ const createAlienShipList = () => {
     return alienShipsArray;
 }
 const disableButton = (button) => {
-    button.setAttribute('disabled', 'disabled')
+    button.setAttribute('disabled', '')
 }
 const enableButton = (button) => {
     button.removeAttribute('disabled');
@@ -168,6 +168,13 @@ const startTheGame = () => {
         resume.classList.toggle('hidden');
         enableButton(attackButton);
     }
+    // else {
+    //     const myPromise = new promise((resolve, reject) => {
+    //         setTimeout(() => {
+    //             resolve(disableButton(attackButton))
+    //         }, 3000);
+    //     })
+    // }
     //show the game container and adjust the top of the button div
     let gameContainer = getElementById('game-div');
     gameContainer.classList.toggle('hidden');
@@ -200,6 +207,7 @@ const restart = () => {
     let gameContainer = getElementById('game-div')
     let myImg = getElementById('my');
     let aImg = getElementById('alien');
+    console.log(resume)
     if (resume.classList.contains('hidden')) {
         resume.classList.toggle('hidden');
     }
@@ -286,6 +294,8 @@ const attackTheAlien = () => {
         disableButton(attackButton);
         disableButton(restartButton);
         disableButton(closeButton);
+        console.log(attackButton);
+        console.log(restartButton);
         attackButton.textContent = 'RELOADING...'
         //generate random number for attack accurancy
         let attackAccuracy = Math.random();
@@ -470,4 +480,3 @@ setInterval(() => {
 
 resume = getElementById('resume');
 resume.addEventListener('click', resumeTheGame)
-
