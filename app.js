@@ -60,7 +60,7 @@ class AlienShips {
     //insert alien ships in the list
     addShipToList(name, multiplier) {
         //generate number of ship randomly from 6 to 8 inclusive
-        let numberOfAlienShips = randomNumber(1, 2);
+        let numberOfAlienShips = randomNumber(6, 8);
         for (let i = 0; i < numberOfAlienShips; i++) {
             let alienShip = new Ship(`${name} ${i + 1}`);
             //generate the health for the alien ship from 3 to 6 inclusive
