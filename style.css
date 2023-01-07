@@ -167,11 +167,12 @@
     color: yellow;
 }
 
-#outcome>* {
+.outcome>* {
     width: 100%;
     height: max-content;
     font-size: 130%;
     text-transform: uppercase;
+    margin: 20px auto;
 
 }
 
