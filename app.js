@@ -60,7 +60,7 @@ class AlienShips {
     //insert alien ships in the list
     addShipToList(name, multiplier) {
         //generate number of ship randomly from 6 to 8 inclusive
-        let numberOfAlienShips = randomNumber(1, 2);
+        let numberOfAlienShips = randomNumber(6, 8);
         for (let i = 0; i < numberOfAlienShips; i++) {
             let alienShip = new Ship(`${name} ${i + 1}`);
             //generate the health for the alien ship from 3 to 6 inclusive
@@ -270,7 +270,7 @@ const closeTheGame = () => {
     checker = 0;
     level = 0;
     let prompt;
-    if (resume.classList.contains('hidden')) {
+    if (!resume.classList.contains('hidden')) {
         resume.classList.toggle('hidden');
     }
     disableButton(attackButton)
@@ -365,7 +365,7 @@ const attackTheAlien = () => {
                             outcomeContainer.appendChild(cinema);
                             let achievement = document.createElement('p');
                             achievement.setAttribute('class', 'result');
-                            achievement.textContent = `Congratulation, you have reached level ${level}`
+                            achievement.textContent = `Congratulation, you have reached level ${level + 1}`
                             outcomeContainer.appendChild(achievement)
                         }, 7000);
                     }
@@ -475,7 +475,7 @@ const attackTheAlien = () => {
                                     outcomeContainer.appendChild(cinema);
                                     let achievement = document.createElement('p');
                                     achievement.setAttribute('class', 'result');
-                                    achievement.textContent = `Congratulation, you have reached level ${level}`;
+                                    achievement.textContent = `Congratulation, you have reached level ${level + 1}`;
                                     outcomeContainer.appendChild(achievement);
                                 }, 3000);
                             }
