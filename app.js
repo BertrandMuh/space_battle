@@ -1,5 +1,7 @@
 
 //create some variables
+let level = 0;
+let prompt;
 let startButton;
 let restartButton;
 let closeButton;
@@ -45,8 +47,8 @@ class Ship {
         this.accuracy = accuracy;
     }
     //method to reduce ship health when damaged due to the attack
-    attack(ship) {
-        ship.hull -= this.firepower
+    attack(ship, shield = 0) {
+        ship.hull -= this.firepower - shield;
     }
 }
 //class to generate an alien ships list
@@ -56,13 +58,13 @@ class AlienShips {
         this.ships = []
     }
     //insert alien ships in the list
-    addShipToList(name) {
+    addShipToList(name, multiplier) {
         //generate number of ship randomly from 6 to 8 inclusive
-        let numberOfAlienShips = randomNumber(6, 8);
+        let numberOfAlienShips = randomNumber(1, 2);
         for (let i = 0; i < numberOfAlienShips; i++) {
             let alienShip = new Ship(`${name} ${i + 1}`);
             //generate the health for the alien ship from 3 to 6 inclusive
-            alienShip.hull = randomNumber(3, 6);
+            alienShip.hull = randomNumber(3 + multiplier, 6 + multiplier);
             //generate the firepower for the alien ship from 2 to 4 inclusive
             alienShip.firepower = randomNumber(2, 4);
             //generate the health for the alien ship from 0.6 to 0.8 inclusive
@@ -75,6 +77,7 @@ class AlienShips {
     }
 }
 //create fucntion to simplify your code
+
 const getElementById = (id) => {
     return document.getElementById(id)
 }
@@ -114,7 +117,7 @@ const createMyShip = () => {
 //create new alien ships and return a list
 const createAlienShipList = () => {
     let alienShips = new AlienShips;
-    alienShips.addShipToList(alienShipName);
+    alienShips.addShipToList(alienShipName, level);
     let alienShipsArray = alienShips.ships
     return alienShipsArray;
 }
@@ -198,17 +201,15 @@ const startTheGame = () => {
 }
 
 const restart = () => {
+    level = 0;
     getElementById('my-img').src = myShipImg;
     restartCloseButton.play()
     myMusic.pause();
     let checker = 0;
-    let prompt;
-    let lastAlienShipHull = alienShipsArray[alienShipsArray.length - 1].hull;
     let outcome = getElementById('outcome');
     let gameContainer = getElementById('game-div')
     let myImg = getElementById('my');
     let aImg = getElementById('alien');
-    console.log(resume)
     if (resume.classList.contains('hidden')) {
         resume.classList.toggle('hidden');
     }
@@ -264,10 +265,10 @@ const restart = () => {
 }
 
 const closeTheGame = () => {
-    let lastAlienShipHull = alienShipsArray[alienShipsArray.length - 1].hull;
     restartCloseButton.play()
     myMusic.pause();
-    let checker = 0
+    checker = 0;
+    level = 0;
     let prompt;
     if (resume.classList.contains('hidden')) {
         resume.classList.toggle('hidden');
@@ -288,28 +289,30 @@ const closeTheGame = () => {
 const attackTheAlien = () => {
     //attack the alienship
     let enemyShip = alienShipsArray[currentAlienShip];
-
     if (currentAlienShip < alienShipsArray.length) {
         //play the attack sound and disabled the attack button
         myShipAttackSound.play();
         disableButton(attackButton);
         disableButton(restartButton);
         disableButton(closeButton);
-        console.log(attackButton);
-        console.log(restartButton);
         attackButton.textContent = 'RELOADING...'
+
+        //create a logic for a shield when activated, increase the firepower of your ship and strenghen your defense.
+        let myShield = Math.floor(Math.random() * 10);
+        if (myShield <= 3) {
+            if (myShip.firepower === 5) {
+                myShip.hull += myShield
+                myShip.firepower += randomNumber(2, 5);
+                displayMyShipData(myShipName, myShip.hull, myShip.firepower, myShip.accuracy);
+                highlightDelay(`Your ship shield has been activated and your firepower increased to ${myShip.firepower}`, 'destroyed comments', 0);
+            }
+        }
         //generate random number for attack accurancy
         let attackAccuracy = Math.random();
         if (attackAccuracy < myShip.accuracy) {
-            //create a logic for a shield when activated, increase the firepower of your ship and strenghen your defense.
-            let myShield = Math.random();
-            if (myShield < 0.3) {
-                myShip.firepower += randomNumber(1, 3);
-                highlightDelay(`Your ship shield has been activated and your firepower increased to ${myShip.firepower}`, 'destroyed comments', 0);
-            }
+
             //reduce the alien hull
             myShip.attack(enemyShip);
-            myShip.firepower = 5;
             //remove disabled attribute after 5 seconds
             setTimeout(() => {
                 enableButton(attackButton);
@@ -336,6 +339,7 @@ const attackTheAlien = () => {
                     //have the enemy attack your ship
                     enemyShip.attack(myShip);
                     highlightDelay('You have been hit!', 'alien-ship comments', 4000);
+                    myShip.firepower = 5;
                     //display a message when your ship health is very low
                     if (myShip.hull < 5 && myShip.hull > 0) {
                         highlightDelay('YOU HAVE LESS THAN 5 HULL REMAINING', 'destroyed comments', 5000);
@@ -358,7 +362,11 @@ const attackTheAlien = () => {
                             let cinema = document.createElement('div');
                             cinema.setAttribute('class', 'result');
                             cinema.textContent = 'The planet Earth has been conquered by the Aliens after our last ship was defeated.';
-                            outcomeContainer.appendChild(cinema)
+                            outcomeContainer.appendChild(cinema);
+                            let achievement = document.createElement('p');
+                            achievement.setAttribute('class', 'result');
+                            achievement.textContent = `Congratulation, you have reached level ${level}`
+                            outcomeContainer.appendChild(achievement)
                         }, 7000);
                     }
                     setTimeout(() => {
@@ -402,17 +410,77 @@ const attackTheAlien = () => {
 
                     }
                     else {
-                        highlightDelay('GAME OVER', 'comments destroyed', 1000);
-                        setTimeout(() => {
-                            myMusic.pause();
-                            getElementById('game-div').classList.toggle('hidden');
-                            let outcomeContainer = getElementById('outcome');
-                            outcomeContainer.classList.toggle('hidden')
-                            let cinema = document.createElement('div');
-                            cinema.setAttribute('class', 'result');
-                            cinema.textContent = 'The Aliens have been defeated. The planet Earth is safe.';
-                            outcomeContainer.appendChild(cinema)
-                        }, 3000);
+                        checker = 0;
+
+                        do {
+                            prompt = window.prompt('Do you want to continue to next level? (y/n)');
+                            if (prompt.toLowerCase() == 'y' || prompt.toLowerCase() == 'yes') {
+                                level++;
+                                myMusic.currentTime = 0;
+                                checker = 1;
+                                startSound.play();
+                                myMusic.play();
+                                currentAlienShip = 0;
+                                let defeatedAlienShips = getElementsByClassName('destroyed-alien-ships');
+                                let comments = getElementsByClassName('comments');
+                                let outcomeResult = getElementsByClassName('result')
+                                defeatedAlienShips.forEach(child => {
+                                    child.remove()
+                                })
+                                comments.forEach(child => {
+                                    child.remove()
+                                })
+                                outcomeResult.forEach(child => {
+                                    child.remove()
+                                })
+
+                                if (outcome.classList.contains('hidden') === false) {
+                                    outcome.classList.toggle('hidden');
+                                    gameContainer.classList.toggle('hidden')
+                                }
+                                if (!resume.classList.contains('hidden')) {
+                                    resume.classList.toggle('hidden');
+                                }
+                                enableButton(attackButton)
+                                //give the myShip and alienShipsArrav variables new values
+                                myShip = createMyShip();
+                                myShip.hull += level
+                                alienShipsArray = createAlienShipList();
+                                //display the new contents on the pages
+                                displayMyShipData(myShip.name, myShip.hull, myShip.firepower, myShip.accuracy);
+                                displayAlienShipData(alienShipsArray[0].name, alienShipsArray[0].hull, alienShipsArray[0].firepower, alienShipsArray[0].accuracy, alienShipsArray[0].shipImage);
+                                let pos = -100;
+                                let myImg = getElementById('my');
+                                let aImg = getElementById('alien')
+                                setInterval(() => {
+                                    if (pos < 0) {
+                                        pos++;
+                                        myImg.style.bottom = pos + '%';
+                                        aImg.style.top = pos + '%'
+                                    }
+                                });
+                            }
+
+                            else if (prompt.toLowerCase() == 'n' || prompt.toLowerCase() == 'no') {
+                                checker = 1;
+                                highlightDelay('GAME OVER', 'comments destroyed', 1000);
+                                setTimeout(() => {
+                                    myMusic.pause();
+                                    getElementById('game-div').classList.toggle('hidden');
+                                    let outcomeContainer = getElementById('outcome');
+                                    outcomeContainer.classList.toggle('hidden')
+                                    let cinema = document.createElement('div');
+                                    cinema.setAttribute('class', 'result');
+                                    cinema.textContent = 'The Aliens have been defeated. The planet Earth is safe.';
+                                    outcomeContainer.appendChild(cinema);
+                                    let achievement = document.createElement('p');
+                                    achievement.setAttribute('class', 'result');
+                                    achievement.textContent = `Congratulation, you have reached level ${level}`;
+                                    outcomeContainer.appendChild(achievement);
+                                }, 3000);
+                            }
+                        }
+                        while (checker == 0);
                     }
                 }, 2000)
             }
@@ -432,6 +500,7 @@ const attackTheAlien = () => {
             attackAccuracy = Math.random();
             if (attackAccuracy < enemyShip.accuracy) {
                 enemyShip.attack(myShip);
+                myShip.firepower = 5;
                 highlightDelay('You have been hit!', 'alien-ship comments', 2000);
                 if (myShip.hull < 3 && myShip.hull > 0) {
                     highlightDelay('YOU HAVE LESS THAN 5 HULL REMAINING', 'destroyed comments', 3000)
