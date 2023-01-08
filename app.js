@@ -1,5 +1,8 @@
 
 //create some variables
+let time
+let myShield;
+let sleep;
 let level = 0;
 let prompt;
 let startButton;
@@ -111,9 +114,9 @@ const highlightDelay = (textContent, elementClass, time) => {
         resolve(paragraph.textContent = textContent);
     });
     setTimeout(() => {
-        promise.then(highlightContainer.appendChild(paragraph), scrollToTheBottom())
+        promise.then(highlightContainer.appendChild(paragraph), scrollToTheBottom(),
+            time += sleep);
     }, time);
-
 };
 //function to create my new ship
 const createMyShip = () => {
@@ -168,7 +171,13 @@ const resumeTheGame = () => {
         myMusic.play()
     }
 }
-
+const increaseMyHullAndFirepower = () => {
+    myShip.hull += myShield
+    myShip.firepower += randomNumber(2, 5);
+    displayMyShipData();
+    highlightDelay(`Your ship shield has been activated and your firepower increased to ${myShip.firepower}`, 'destroyed comments', time);
+    time += sleep;
+}
 const startTheGame = () => {
     level = 0;
     startSound.play();
@@ -210,15 +219,12 @@ const restartOrContinueAction = () => {
     currentAlienShip = 0;
     let defeatedAlienShips = getElementsByClassName('destroyed-alien-ships');
     let comments = getElementsByClassName('comments');
-    let outcomeResult = getElementsByClassName('result')
-    defeatedAlienShips.forEach(child => {
-        child.remove()
-    })
-    comments.forEach(child => {
-        child.remove()
-    })
-    outcomeResult.forEach(child => {
-        child.remove()
+    let outcomeResult = getElementsByClassName('result');
+    let combinationArray = [defeatedAlienShips, comments, outcomeResult];
+    combinationArray.forEach(array => {
+        array.forEach(element => {
+            element.remove()
+        })
     })
 
     if (outcome.classList.contains('hidden') === false) {
@@ -298,8 +304,30 @@ const closeTheGame = () => {
         }
     } while (checker !== 1);
 }
-
+const earthDefeated = (time) => {
+    setTimeout(() => {
+        getElementById('my-img').src = explosionImg;
+        explosionSound.play();
+        myShip.hull = 0;
+        myMusic.pause();
+        getElementById('game-div').classList.toggle('hidden');
+        let outcomeContainer = getElementById('outcome');
+        outcomeContainer.classList.toggle('hidden');
+        let cinema = document.createElement('div');
+        cinema.setAttribute('class', 'result');
+        cinema.textContent = 'The planet Earth has been conquered by the Aliens after our last ship was defeated.';
+        outcomeContainer.appendChild(cinema);
+        let achievement = document.createElement('p');
+        achievement.setAttribute('class', 'result');
+        achievement.textContent = `Congratulation! you have reached level ` + (level + 1)
+        disableButton(attackButton);
+        highlightDelay('GAME OVER', 'comments destroyed', 3000);
+        outcomeContainer.appendChild(achievement)
+    }, time);
+}
 const attackTheAlien = () => {
+    time = 0;
+    sleep = 1000
     //attack the alienship
     let enemyShip = alienShipsArray[currentAlienShip];
     if (currentAlienShip < alienShipsArray.length) {
@@ -311,204 +339,160 @@ const attackTheAlien = () => {
         attackButton.textContent = 'RELOADING...'
 
         //create a logic for a shield when activated, increase the firepower of your ship and strenghen your defense.
-        let myShield = Math.floor(Math.random() * 10);
+        myShield = Math.floor(Math.random() * 10);
         if (myShield <= 3) {
             if (myShip.firepower === 5) {
-                myShip.hull += myShield
-                myShip.firepower += randomNumber(2, 5);
-                displayMyShipData();
-                highlightDelay(`Your ship shield has been activated and your firepower increased to ${myShip.firepower}`, 'destroyed comments', 0);
+                increaseMyHullAndFirepower()
             }
         }
+
         //generate random number for attack accurancy
         let attackAccuracy = Math.random();
+        // Do this if your aim was on point
         if (attackAccuracy < myShip.accuracy) {
-
-            //reduce the alien hull
-            myShip.attack(enemyShip);
             //remove disabled attribute after 5 seconds
             setTimeout(() => {
                 enableButton(attackButton);
                 enableButton(restartButton);
                 enableButton(closeButton)
                 attackButton.innerText = 'FIRE'
-            }, 6000)
+            }, 6000);
+
+            //reduce the alien hull
+            myShip.attack(enemyShip);
+
             //display comments and new data on the page
-            highlightDelay('Attacking the alien ship...', 'my-ship comments', 0);
-            highlightDelay('You have hit the alien ship!', 'my-ship comments', 1000);
+            highlightDelay('Attacking the alien ship...', 'my-ship comments', time);
+            highlightDelay('You have hit the alien ship!', 'my-ship comments', time += sleep);
             setTimeout(() => {
                 displayAlienShipData()
-            }, 2000)
-            //if the enemy ship is not destroy after the attack
-            if (enemyShip.hull > 0) {
-                //display a comment
-                highlightDelay('The aliens ship survived!', 'alien-ship comments', 2000);
-                setTimeout(() => {
-                    alienShipAttackSound.play()
-                }, 3000)
-                highlightDelay('The aliens are attacking...', 'alien-ship comments', 3000);
-                attackAccuracy = Math.random();
-                if (attackAccuracy < enemyShip.accuracy) {
-                    //have the enemy attack your ship
-                    enemyShip.attack(myShip);
-                    highlightDelay('You have been hit!', 'alien-ship comments', 4000);
-                    myShip.firepower = 5;
-                    //display a message when your ship health is very low
-                    if (myShip.hull < 5 && myShip.hull > 0) {
-                        highlightDelay('YOU HAVE LESS THAN 5 HULL REMAINING', 'destroyed comments', 5000);
-                    }
-                    //stop the game when your ship is destroyed
-                    else if (myShip.hull <= 0) {
-                        myShip.hull = 0;
-                        setTimeout(() => {
-                            getElementById('my-img').src = explosionImg;
-                            myShip.hull = 0;
-                            explosionSound.play()
-                        }, 5000);
-
-                        highlightDelay('GAME OVER', 'comments destroyed', 5000);
-                        setTimeout(() => {
-                            myMusic.pause();
-                            getElementById('game-div').classList.toggle('hidden');
-                            let outcomeContainer = getElementById('outcome');
-                            outcomeContainer.classList.toggle('hidden');
-                            let cinema = document.createElement('div');
-                            cinema.setAttribute('class', 'result');
-                            cinema.textContent = 'The planet Earth has been conquered by the Aliens after our last ship was defeated.';
-                            outcomeContainer.appendChild(cinema);
-                            let achievement = document.createElement('p');
-                            achievement.setAttribute('class', 'result');
-                            achievement.textContent = `Congratulation! you have reached level ${level + 1}`
-                            outcomeContainer.appendChild(achievement)
-                        }, 7000);
-                    }
-                    setTimeout(() => {
-                        displayMyShipData()
-                    }, 5000);
-                }
-                else {
-                    highlightDelay('The aliens have missed!', 'comments destroyed', 4000);
-                }
-            }
-            //do this if the alien ship health is at zero or less
-            else {
-                enemyShip.hull = 0;
-                highlightDelay(`The aliens ship ${currentAlienShip + 1} was destroyed.`, 'destroyed comments', 2000);
-                setTimeout(() => {
-                    getElementById('alien-img').src = explosionImg;
-                    explosionSound.play()
-                }, 2000);
-                //create a paragraph element to have the name of the defeated ship and append it into the destroyed ships div
-                let recentDefeatedShip = document.createElement('p');
-                recentDefeatedShip.setAttribute('class', 'destroyed-alien-ships');
-                recentDefeatedShip.textContent = `${enemyShip.name}`
-                let destroyedShips = getElementById('destroyed-ships');
-                setTimeout(() => {
-                    destroyedShips.appendChild(recentDefeatedShip);
-                    currentAlienShip++;
-                    //display the new ship data on the page
-                    if (currentAlienShip < alienShipsArray.length) {
-                        let aImg = getElementById('alien');
-                        let pos = -100;
-                        enemyShip = alienShipsArray[currentAlienShip];
-                        setTimeout(() => {
-                            displayAlienShipData()
-                            setInterval(() => {
-                                if (pos < 0) {
-                                    pos++;
-                                    aImg.style.top = pos + '%'
-                                }
-                            });
-                        }, 4000);
-
-                    }
-                    else {
-                        checker = 0;
-                        setTimeout(() => {
-                            do {
-                                prompt = window.prompt('Do you want to continue to next level? (y/n)');
-                                if (prompt === null) {
-                                    checker = 0
-                                }
-                                else if (prompt.toLowerCase() == 'y' || prompt.toLowerCase() == 'yes') {
-                                    checker = 1;
-                                    level++;
-                                    restartOrContinueAction()
-                                }
-
-                                else if (prompt.toLowerCase() == 'n' || prompt.toLowerCase() == 'no') {
-                                    checker = 1;
-                                    highlightDelay('GAME OVER', 'comments destroyed', 1000);
-                                    setTimeout(() => {
-                                        myMusic.pause();
-                                        getElementById('game-div').classList.toggle('hidden');
-                                        let outcomeContainer = getElementById('outcome');
-                                        outcomeContainer.classList.toggle('hidden')
-                                        let cinema = document.createElement('div');
-                                        cinema.setAttribute('class', 'result');
-                                        cinema.textContent = 'The Aliens have been defeated. The planet Earth is safe.';
-                                        outcomeContainer.appendChild(cinema);
-                                        let achievement = document.createElement('p');
-                                        achievement.setAttribute('class', 'result');
-                                        achievement.textContent = `Congratulation! you have reached level ${level + 1}`;
-                                        outcomeContainer.appendChild(achievement);
-                                    }, 3000);
-                                }
-                            }
-                            while (checker !== 1);
-
-                        }, 3000);
-                    }
-                }, 2000)
-            }
+            }, time)
         }
-        //do this if your fire accuracy was not on point
+
+        // Do this if you missed
         else {
-            highlightDelay('You missed your target!', 'destroyed comments', 0);
+            highlightDelay('You missed your target!', 'destroyed comments', time += sleep);
             setTimeout(() => {
                 enableButton(attackButton);
                 enableButton(closeButton);
                 enableButton(restartButton);
                 attackButton.innerText = 'FIRE'
             }, 3000);
-            //have the alien attack your ship
-            highlightDelay('The aliens are attacking...', 'alien-ship comments', 1000);
-            alienShipAttackSound.play()
+        }
+
+        // Do this if the alien ship survived
+        if (enemyShip.hull > 0) {
+            //display a comment
+            highlightDelay('The aliens ship survived!', 'alien-ship comments', time += sleep);
+            setTimeout(() => {
+                alienShipAttackSound.play();
+            }, time)
+            highlightDelay('The aliens are attacking...', 'alien-ship comments', time += sleep);
+
+            // Have the alien attack you
             attackAccuracy = Math.random();
             if (attackAccuracy < enemyShip.accuracy) {
+                // Have the enemy attack your ship
                 enemyShip.attack(myShip);
+                highlightDelay('You have been hit!', 'alien-ship comments', time += sleep);
                 myShip.firepower = 5;
-                highlightDelay('You have been hit!', 'alien-ship comments', 2000);
-                if (myShip.hull < 3 && myShip.hull > 0) {
-                    highlightDelay('YOU HAVE LESS THAN 5 HULL REMAINING', 'destroyed comments', 3000)
-                }
-                else if (myShip.hull <= 0) {
-                    setTimeout(() => {
-                        getElementById('my-img').src = explosionImg;
-                        explosionSound.play();
-                        myShip.hull = 0;
-                    }, 3000);
-                    disableButton(attackButton);
-                    highlightDelay('GAME OVER', 'comments destroyed', 3000);
-                    setTimeout(() => {
-                        myMusic.pause();
-                        getElementById('game-div').classList.toggle('hidden');
-                        let outcomeContainer = getElementById('outcome');
-                        outcomeContainer.classList.toggle('hidden');
-                        let cinema = document.createElement('div');
-                        cinema.setAttribute('class', 'result');
-                        cinema.textContent = 'The planet Earth has been conquered by the Aliens after our last ship was defeated.';
-                        outcomeContainer.appendChild(cinema)
-                    }, 6000);
-                }
-                setTimeout(() => {
-                    displayMyShipData();
-                }, 3000);
+                displayMyShipData()
             }
             else {
-                highlightDelay('The aliens have missed!', 'comments destroyed', 2000);
-                return true;
+                highlightDelay('The aliens have missed!', 'comments destroyed', 4000);
             }
+        }
+        //do this if the alien ship has been destroyed
+        else {
+            enemyShip.hull = 0;
+            highlightDelay(`The aliens ship ${currentAlienShip + 1} was destroyed.`, 'destroyed comments', time);
+            setTimeout(() => {
+                getElementById('alien-img').src = explosionImg;
+                explosionSound.play()
+            }, 2000);
+            //create a paragraph element to have the name of the defeated ship and append it into the destroyed ships div
+            let recentDefeatedShip = document.createElement('p');
+            recentDefeatedShip.setAttribute('class', 'destroyed-alien-ships');
+            recentDefeatedShip.textContent = `${enemyShip.name}`
+            let destroyedShips = getElementById('destroyed-ships');
+            destroyedShips.appendChild(recentDefeatedShip);
+            currentAlienShip++;
+        }
+        // Do this if the last alien has not been defeated yet
+        if (currentAlienShip < alienShipsArray.length) {
+            let aImg = getElementById('alien');
+            let pos = -100;
+            enemyShip = alienShipsArray[currentAlienShip];
+            setTimeout(() => {
+                displayAlienShipData()
+                setInterval(() => {
+                    if (pos < 0) {
+                        pos++;
+                        aImg.style.top = pos + '%'
+                    }
+                });
+            }, 4000);
+        }
+
+        // Do this if there is no more alien remaning
+        else {
+            checker = 0;
+            setTimeout(() => {
+                do {
+                    prompt = window.prompt('Do you want to continue to next level? (y/n)');
+                    if (prompt === null) {
+                        checker = 0
+                    }
+                    else if (prompt.toLowerCase() == 'y' || prompt.toLowerCase() == 'yes') {
+                        checker = 1;
+                        level++;
+                        restartOrContinueAction()
+                    }
+
+                    else if (prompt.toLowerCase() == 'n' || prompt.toLowerCase() == 'no') {
+                        checker = 1;
+                        highlightDelay('GAME OVER', 'comments destroyed', 1000);
+                        setTimeout(() => {
+                            myMusic.pause();
+                            getElementById('game-div').classList.toggle('hidden');
+                            let outcomeContainer = getElementById('outcome');
+                            outcomeContainer.classList.toggle('hidden')
+                            let cinema = document.createElement('div');
+                            cinema.setAttribute('class', 'result');
+                            cinema.textContent = 'The Aliens have been defeated. The planet Earth is safe.';
+                            outcomeContainer.appendChild(cinema);
+                            let achievement = document.createElement('p');
+                            achievement.setAttribute('class', 'result');
+                            achievement.textContent = `Congratulation! you have reached level ${level + 1}`;
+                            outcomeContainer.appendChild(achievement);
+                        }, 3000);
+                    }
+                }
+                while (checker !== 1);
+
+            }, 3000);
+        }
+
+        // Do this if your ship survived and the health is very low
+        if (myShip.hull < 5 && myShip.hull > 0) {
+            setTimeout(() => {
+                displayMyShipData()
+            }, 5000);
+            highlightDelay('YOU HAVE LESS THAN 5 HULL REMAINING', 'destroyed comments', time);
+        }
+        //stop the game when your ship is destroyed
+        else if (myShip.hull <= 0) {
+            myShip.hull = 0;
+            setTimeout(() => {
+                getElementById('my-img').src = explosionImg;
+                myShip.hull = 0;
+                explosionSound.play()
+            }, 5000);
+            setTimeout(() => {
+                displayMyShipData()
+            }, 5000);
+            highlightDelay('GAME OVER', 'comments destroyed', 5000);
+            earthDefeated();
         }
     }
 }
