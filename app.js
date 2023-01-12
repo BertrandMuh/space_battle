@@ -1,6 +1,7 @@
 
 //create some variables
-let time
+let missile;
+let time;
 let myShield;
 let sleep;
 let level = 0;
@@ -9,21 +10,20 @@ let startButton;
 let restartButton;
 let closeButton;
 let attackButton;
+let missileButton;
 let resume;
 let volume = 0.4
-let explosionImg = './images/explosion.png'
+let explosionImg = './images/explosion.png';
 let explosionSound = new Audio('./audios/explosion-sound.mp3');
-explosionSound.volume = volume;
 let alienShipAttackSound = new Audio('./audios/laser-gun.mp3');
-alienShipAttackSound.volume = volume;
 let myShipAttackSound = new Audio('./audios/blaster-2.mp3');
-myShipAttackSound.volume = volume;
 let restartCloseButton = new Audio('./audios/open-doors.mp3');
-restartCloseButton.volume = volume
 let startSound = new Audio('./audios/game-start.mp3');
-startSound.volume = volume
 let myMusic = new Audio("./audios/epic_battle_music.mp3");
-myMusic.volume = 0.3;
+let soundArray = [explosionSound, alienShipAttackSound, myShipAttackSound, restartCloseButton, startSound, myMusic];
+soundArray.forEach(el => {
+    el.volume = volume;
+})
 //make sure the music repeat
 myMusic.addEventListener('ended', function () {
     this.currentTime = 0;
@@ -68,7 +68,7 @@ class AlienShips {
     //insert alien ships in the list
     addShipToList(name, multiplier = level) {
         //generate number of ship randomly from 6 to 8 inclusive
-        let numberOfAlienShips = randomNumber(6, 8);
+        let numberOfAlienShips = randomNumber(1, 2);
         for (let i = 0; i < numberOfAlienShips; i++) {
             let alienShip = new Ship(`${name} ${i + 1}`);
             //generate the health for the alien ship from 3 to 6 inclusive
@@ -170,7 +170,8 @@ const displayAlienShipData = () => {
 const resumeTheGame = () => {
     if (!resume.classList.contains('hidden')) {
         resume.classList.toggle('hidden');
-        enableButton(attackButton)
+        enableButton(attackButton);
+        enableButton(missileButton)
         myMusic.play()
     }
 }
@@ -181,6 +182,7 @@ const increaseMyHullAndFirepower = () => {
     highlight(`Your ship shield has been activated and your firepower increased to ${myShip.firepower}`, 'destroyed comments');
 }
 const startTheGame = () => {
+    missile = 0;
     level = 0;
     startSound.play();
     myMusic.play();
@@ -188,7 +190,8 @@ const startTheGame = () => {
     alienShipsArray = createAlienShipList();
     if (!resume.classList.contains('hidden')) {
         resume.classList.toggle('hidden');
-        enableButton(attackButton)
+        enableButton(attackButton);
+        enableButton(missileButton)
     }
     let gameContainer = getElementById('game-div');
     gameContainer.classList.toggle('hidden');
@@ -213,9 +216,7 @@ const startTheGame = () => {
 const restartOrContinueAction = () => {
     let outcome = getElementById('outcome');
     let gameContainer = getElementById('game-div')
-    let myImg = getElementById('my');
     let aImg = getElementById('alien');
-    myMusic.currentTime = 0;
     startSound.play();
     myMusic.play();
     currentAlienShip = 0;
@@ -236,7 +237,11 @@ const restartOrContinueAction = () => {
     if (!resume.classList.contains('hidden')) {
         resume.classList.toggle('hidden');
     }
-    enableButton(attackButton)
+    if (!missileButton.classList.contains('hidden')) {
+        missileButton.classList.toggle('hidden')
+    }
+    enableButton(attackButton);
+    enableButton(missileButton);
     //give the myShip and alienShipsArrav variables new values
     myShip = createMyShip();
     alienShipsArray = createAlienShipList();
@@ -247,7 +252,6 @@ const restartOrContinueAction = () => {
     setInterval(() => {
         if (pos < 0) {
             pos++;
-            myImg.style.bottom = pos + '%';
             aImg.style.top = pos + '%'
         }
     });
@@ -271,11 +275,15 @@ const restart = () => {
             disableButton(attackButton)
         }
         else if (prompt.toLowerCase() === 'y' || prompt.toLowerCase() === 'yes') {
-            restartCloseButton.play()
+            restartCloseButton.play();
+            myMusic.currentTime = 0;
             level = 0;
+            missile = 0;
             getElementById('my-img').src = myShipImg;
             checker = 1;
-            restartOrContinueAction()
+            restartOrContinueAction();
+            missile = 0;
+
         }
     } while (checker !== 1);
 }
@@ -348,7 +356,26 @@ const alienDefeated = () => {
     outcomeContainer.appendChild(achievement);
 }
 
+const addMissile = () => {
+    missileButton
+    let numberOfMissile = getElementById('number-of-missile');
+    myShip.firepower += 10;
+    myShip.accuracy = 1;
+    displayMyShipData();
+    highlight('you added a missile. Your firepower and accuracy have increased!', 'comments destroyed', 0);
+    disableButton(missileButton);
+    console.log(missileButton)
+    if (missile > 1) {
+        missile--;
+        numberOfMissile.textContent = `+${missile}`
+    }
+    else {
+        missileButton.classList.toggle('hidden')
+    }
+}
+
 const attackTheAlien = () => {
+    missileButton = getElementById('missile');
     time = 0;
     sleep = 1000
     //attack the alienship
@@ -380,7 +407,8 @@ const attackTheAlien = () => {
                 enableButton(attackButton);
                 enableButton(restartButton);
                 enableButton(closeButton);
-                attackButton.innerText = 'FIRE'
+                enableButton(missileButton)
+                attackButton.innerText = 'FIRE';
             }, 6000);
 
             //reduce the alien hull
@@ -401,6 +429,7 @@ const attackTheAlien = () => {
                 enableButton(attackButton);
                 enableButton(closeButton);
                 enableButton(restartButton);
+                enableButton(missileButton)
                 attackButton.innerText = 'FIRE'
             }, 3000);
         }
@@ -450,53 +479,58 @@ const attackTheAlien = () => {
             setTimeout(() => {
                 destroyedShips.appendChild(recentDefeatedShip);
                 currentAlienShip++;
+                // Do this if the last alien has not been defeated yet
+                if (currentAlienShip < alienShipsArray.length) {
+                    let aImg = getElementById('alien');
+                    let pos = -100;
+                    enemyShip = alienShipsArray[currentAlienShip];
+                    setTimeout(() => {
+                        displayAlienShipData()
+                        setInterval(() => {
+                            if (pos < 0) {
+                                pos++;
+                                aImg.style.top = pos + '%'
+                            }
+                        });
+                    }, time += sleep);
+                }
+
+                // Do this if there is no more alien remaning
+                else if (currentAlienShip >= alienShipsArray.length) {
+                    checker = 0;
+                    setTimeout(() => {
+                        do {
+                            prompt = window.prompt('Do you want to continue to next level? (y/n)');
+                            if (prompt === null) {
+                                checker = 0
+                            }
+                            else if (prompt.toLowerCase() == 'y' || prompt.toLowerCase() == 'yes') {
+                                checker = 1;
+                                level++;
+
+                                restartOrContinueAction();
+                                if (level > 5) {
+                                    if (missileButton.classList.contains('hidden')) {
+                                        missileButton.classList.toggle('hidden');
+                                        missile = level - 1;
+                                        getElementById('number-of-missile').textContent = `+${missile}`
+                                    }
+                                }
+                            }
+
+                            else if (prompt.toLowerCase() == 'n' || prompt.toLowerCase() == 'no') {
+                                checker = 1;
+                                gameOver();
+                                setTimeout(() => {
+                                    alienDefeated()
+                                }, 3000);
+                            }
+                        }
+                        while (checker !== 1);
+
+                    }, 3000);
+                }
             }, time += sleep);
-
-
-            // Do this if the last alien has not been defeated yet
-            if (currentAlienShip < alienShipsArray.length) {
-                let aImg = getElementById('alien');
-                let pos = -100;
-                enemyShip = alienShipsArray[currentAlienShip];
-                setTimeout(() => {
-                    displayAlienShipData()
-                    console.log('exploasion')
-                    setInterval(() => {
-                        if (pos < 0) {
-                            pos++;
-                            aImg.style.top = pos + '%'
-                        }
-                    });
-                }, time += sleep);
-            }
-
-            // Do this if there is no more alien remaning
-            else {
-                checker = 0;
-                setTimeout(() => {
-                    do {
-                        prompt = window.prompt('Do you want to continue to next level? (y/n)');
-                        if (prompt === null) {
-                            checker = 0
-                        }
-                        else if (prompt.toLowerCase() == 'y' || prompt.toLowerCase() == 'yes') {
-                            checker = 1;
-                            level++;
-                            restartOrContinueAction()
-                        }
-
-                        else if (prompt.toLowerCase() == 'n' || prompt.toLowerCase() == 'no') {
-                            checker = 1;
-                            gameOver();
-                            setTimeout(() => {
-                                alienDefeated()
-                            }, 3000);
-                        }
-                    }
-                    while (checker !== 1);
-
-                }, 3000);
-            }
         }
 
         // Do this if your ship survived and the health is very low
@@ -534,15 +568,19 @@ closeButton.addEventListener('click', closeTheGame);
 restartButton = getElementById('restart-button');
 restartButton.addEventListener('click', restart);
 attackButton = getElementById('attack-button');
-attackButton.addEventListener('click', attackTheAlien)
+attackButton.addEventListener('click', attackTheAlien);
+missileButton = getElementById('missile');
 setInterval(() => {
     //pause the game when the player click outside of the window
-    if (!window.document.hasFocus() && !attackButton.hasAttribute('disabled') && resume.classList.contains('hidden')) {
+    if (!window.document.hasFocus() && !attackButton.hasAttribute('disabled') && resume.classList.contains('hidden') && !missileButton.hasAttribute('disabled')) {
         resume.classList.toggle('hidden');
         myMusic.pause();
         disableButton(attackButton);
+        disableButton(missileButton)
     }
 });
 
 resume = getElementById('resume');
-resume.addEventListener('click', resumeTheGame)
+resume.addEventListener('click', resumeTheGame);
+missileButton.addEventListener('click', addMissile)
+

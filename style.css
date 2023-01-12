@@ -258,9 +258,11 @@
     color: yellow;
     width: max-content;
     padding: 10px 15px;
+    margin-top: auto;
     font-size: 14px;
     border-radius: 2rem;
-    border: 2px solid rgba(255, 255, 0, 0.171)
+    border: 2px solid rgba(255, 255, 0, 0.171);
+    box-shadow: 0 0 5px rgba(255, 255, 0, 0.171);
 }
 
 .game-img {
@@ -293,16 +295,17 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    height: max-content;
     height: 18%;
     position: relative;
     padding: 0;
 }
 
 #missile {
+    background: black;
     border-radius: 10px;
-    border: 1px solid rgba(211, 211, 211, 0.317);
-    color: white;
+    border: 1px solid rgba(183, 9, 9, 0.317);
+    box-shadow: 0 0 5px red;
+    color: red;
     display: flex;
     justify-content: center;
     padding: 4px;
@@ -385,6 +388,7 @@
 
 #resume.hidden,
 #close-button.hidden,
-#restart-button.hidden {
+#restart-button.hidden,
+#missile.hidden {
     display: none;
 }
