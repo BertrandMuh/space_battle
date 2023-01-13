@@ -398,38 +398,39 @@ const addMissile = () => {
         missileButton.classList.toggle('hidden')
     }
 }
-
-const alienLaser = () => {
+let laserSpeed = 5;
+const alienLaser = (time) => {
+    let gameDivHeight = getElementById('game-div').offsetHeight
     let aLaser = getElementById('aLaser');
-    aLaser.style.zIndex = 0;
+    aLaser.style.zIndex = 1;
     let pos = 70;
     setInterval(() => {
-        if (pos < 369) {
-            pos++;
-            aLaser.style.top = pos + '%'
+        if (pos < gameDivHeight - 80) {
+            pos += laserSpeed
+            aLaser.style.top = pos + 'px'
         }
-        else if (pos == 369) {
-            aLaser.style.top = 55 + '%';
+        else {
+            aLaser.style.top = 40 + '%';
             aLaser.style.zIndex = -1
         }
-    })
-
+    }, time / 1000)
 }
 
-const myLaser = () => {
+const myLaser = (time) => {
     let myLaser = getElementById('myLaser');
-    myLaser.style.zIndex = 0
+    let gameDivHeight = getElementById('game-div').offsetHeight
+    myLaser.style.zIndex = 1
     let position = 27;
     setInterval(() => {
-        if (position < 375) {
-            position++;
-            myLaser.style.bottom = position + '%'
+        if (position < gameDivHeight - 80) {
+            position += laserSpeed;
+            myLaser.style.bottom = position + 'px'
         }
-        else if (position == 375) {
+        else {
             myLaser.style.zIndex = -1
-            myLaser.style.bottom = 27 + '%'
+            myLaser.style.bottom = 27 + 'px'
         }
-    })
+    }, time / 1000)
 
 }
 
@@ -437,6 +438,7 @@ const attackTheAlien = () => {
     missileButton = getElementById('missile');
     time = 0;
     sleep = 1000
+
     //attack the alienship
     let enemyShip = alienShipsArray[currentAlienShip];
     if (currentAlienShip < alienShipsArray.length) {
@@ -459,7 +461,6 @@ const attackTheAlien = () => {
                 increaseMyHullAndFirepower()
             }
         }
-        myLaser(time)
         //generate random number for attack accurancy
         let attackAccuracy = Math.random();
         // Do this if your aim was on point
@@ -478,11 +479,13 @@ const attackTheAlien = () => {
             myShip.firepower = 5;
             myShip.accuracy = 0.7
             highlight('Attacking the alien ship...', 'my-ship comments', time);
+            myLaser(0.1)
             highlight('You have hit the alien ship!', 'my-ship comments', time += sleep);
         }
         // Do this if you missed
         else {
-            highlight('You missed your target!', 'destroyed comments', time);
+            myLaser(0.1)
+            highlight('You missed your target!', 'destroyed comments', time += sleep);
             setTimeout(() => {
                 enableButton(attackButton);
                 enableButton(closeButton);
@@ -501,8 +504,10 @@ const attackTheAlien = () => {
             highlight('The aliens ship survived!', 'alien-ship comments', time += sleep);
             highlight('The aliens are attacking...', 'alien-ship comments', time += sleep);
             setTimeout(() => {
+                alienLaser(400)
+            }, time += 500);
+            setTimeout(() => {
                 alienShipAttackSound.play();
-                alienLaser()
             }, time)
 
 

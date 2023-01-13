@@ -306,6 +306,10 @@
     position: absolute;
     height: max-content;
     background: transparent;
+    transform: translateX(423%);
+    width: 10.5%;
+    display: flex;
+    justify-content: space-between;
 }
 
 #aLaser {
@@ -315,21 +319,24 @@
 
 #myLaser {
     z-index: -1;
-    bottom: 27%;
+    bottom: 35%;
 }
 
-#aLaser>img,
-#myLaser>img {
+#aLaser>span,
+#myLaser>span {
     max-width: 9%;
-
+    font-weight: bold;
+    transform: scale(2.5, 1.5);
 }
 
-#aLaser>img {
-    transform: rotate(37deg);
+#aLaser>span {
+    text-shadow: greenyellow 0 0 10px;
+    color: greenyellow;
 }
 
-#myLaser>img {
-    transform: rotate(133deg);
+#myLaser>span {
+    text-shadow: lightskyblue 0 0 10px;
+    color: rgb(0, 191, 234);
 }
 
 #missile {
