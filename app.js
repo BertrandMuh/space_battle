@@ -72,7 +72,7 @@ class AlienShips {
         for (let i = 0; i < numberOfAlienShips; i++) {
             let alienShip = new Ship(`${name} ${i + 1}`);
             //generate the health for the alien ship from 3 to 6 inclusive
-            alienShip.hull = randomNumber(3 + multiplier, 6 + multiplier);
+            alienShip.hull = randomNumber(10 + multiplier, 11 + multiplier);
             //generate the firepower for the alien ship from 2 to 4 inclusive
             alienShip.firepower = randomNumber(2 + multiplier, 4 + multiplier);
             //generate the health for the alien ship from 0.6 to 0.8 inclusive
@@ -121,6 +121,8 @@ const highlight = (textContent, elementClass, time) => {
 
 };
 
+
+
 //function to create my new ship
 const createMyShip = () => {
     let myShip = new Ship(myShipName)
@@ -167,6 +169,19 @@ const displayAlienShipData = () => {
     firepower.textContent = 'Firepower : ' + alienShipsArray[currentAlienShip].firepower;
     accuracy.textContent = 'Accuracy : ' + alienShipsArray[currentAlienShip].accuracy;
 }
+
+const shipEntrace = () => {
+    let myImg = getElementById('my');
+    let aImg = getElementById('alien');
+    let pos = -100;
+    setInterval(() => {
+        if (pos < 0) {
+            pos++;
+            myImg.style.bottom = pos + '%';
+            aImg.style.top = pos + '%'
+        }
+    })
+};
 const resumeTheGame = () => {
     if (!resume.classList.contains('hidden')) {
         resume.classList.toggle('hidden');
@@ -178,6 +193,9 @@ const resumeTheGame = () => {
 const increaseMyHullAndFirepower = () => {
     myShip.hull += myShield
     myShip.firepower += randomNumber(2, 5);
+    if (level > 5) {
+        myShip.firepower += randomNumber(5, level);
+    }
     displayMyShipData();
     highlight(`Your ship shield has been activated and your firepower increased to ${myShip.firepower}`, 'destroyed comments');
 }
@@ -202,17 +220,10 @@ const startTheGame = () => {
     startButton.classList.toggle('hidden')
     displayMyShipData()
     displayAlienShipData();
-    let myImg = getElementById('my');
-    let aImg = getElementById('alien');
-    let pos = -100;
-    setInterval(() => {
-        if (pos < 0) {
-            pos++;
-            myImg.style.bottom = pos + '%';
-            aImg.style.top = pos + '%'
-        }
-    });
+    shipEntrace()
 }
+
+
 const restartOrContinueAction = () => {
     let outcome = getElementById('outcome');
     let gameContainer = getElementById('game-div')
@@ -244,17 +255,26 @@ const restartOrContinueAction = () => {
     enableButton(missileButton);
     //give the myShip and alienShipsArrav variables new values
     myShip = createMyShip();
+    if (level > 5) {
+        myShip.firepower += level - 5
+    }
     alienShipsArray = createAlienShipList();
     //display the new contents on the pages
     displayMyShipData();
     displayAlienShipData();
     let pos = -100;
-    setInterval(() => {
-        if (pos < 0) {
-            pos++;
-            aImg.style.top = pos + '%'
-        }
-    });
+    if (level > 0) {
+        setInterval(() => {
+            if (pos < 0) {
+                pos++;
+                aImg.style.top = pos + '%'
+            }
+        });
+    }
+    else {
+        shipEntrace()
+    }
+
 }
 const restart = () => {
     restartCloseButton.play()
@@ -282,6 +302,7 @@ const restart = () => {
             getElementById('my-img').src = myShipImg;
             checker = 1;
             restartOrContinueAction();
+            shipEntrace()
             missile = 0;
 
         }
@@ -323,6 +344,7 @@ const gameOver = () => {
     scrollToTheBottom();
 }
 
+
 const earthDefeated = () => {
     getElementById('my-img').src = explosionImg;
     explosionSound.play();
@@ -360,6 +382,9 @@ const addMissile = () => {
     missileButton
     let numberOfMissile = getElementById('number-of-missile');
     myShip.firepower += 10;
+    if (level > 10) {
+        myShip.firepower += randomNumber(10, level)
+    }
     myShip.accuracy = 1;
     displayMyShipData();
     highlight('you added a missile. Your firepower and accuracy have increased!', 'comments destroyed', 0);
@@ -372,6 +397,40 @@ const addMissile = () => {
     else {
         missileButton.classList.toggle('hidden')
     }
+}
+
+const alienLaser = () => {
+    let aLaser = getElementById('aLaser');
+    aLaser.style.zIndex = 0;
+    let pos = 70;
+    setInterval(() => {
+        if (pos < 369) {
+            pos++;
+            aLaser.style.top = pos + '%'
+        }
+        else if (pos == 369) {
+            aLaser.style.top = 55 + '%';
+            aLaser.style.zIndex = -1
+        }
+    })
+
+}
+
+const myLaser = () => {
+    let myLaser = getElementById('myLaser');
+    myLaser.style.zIndex = 0
+    let position = 27;
+    setInterval(() => {
+        if (position < 375) {
+            position++;
+            myLaser.style.bottom = position + '%'
+        }
+        else if (position == 375) {
+            myLaser.style.zIndex = -1
+            myLaser.style.bottom = 27 + '%'
+        }
+    })
+
 }
 
 const attackTheAlien = () => {
@@ -394,10 +453,13 @@ const attackTheAlien = () => {
         if (myShield <= 3) {
             if (myShip.firepower === 5) {
                 time = 1000;
+                if (level > 5) {
+                    myShield = randomNumber(5, level)
+                }
                 increaseMyHullAndFirepower()
             }
         }
-
+        myLaser(time)
         //generate random number for attack accurancy
         let attackAccuracy = Math.random();
         // Do this if your aim was on point
@@ -409,18 +471,14 @@ const attackTheAlien = () => {
                 enableButton(closeButton);
                 enableButton(missileButton)
                 attackButton.innerText = 'FIRE';
-            }, 6000);
+            }, 8000);
 
             //reduce the alien hull
             myShip.attack(enemyShip);
-
-            //display comments and new data on the page
-            setTimeout(() => {
-
-            }, time);
+            myShip.firepower = 5;
+            myShip.accuracy = 0.7
             highlight('Attacking the alien ship...', 'my-ship comments', time);
             highlight('You have hit the alien ship!', 'my-ship comments', time += sleep);
-
         }
         // Do this if you missed
         else {
@@ -444,6 +502,7 @@ const attackTheAlien = () => {
             highlight('The aliens are attacking...', 'alien-ship comments', time += sleep);
             setTimeout(() => {
                 alienShipAttackSound.play();
+                alienLaser()
             }, time)
 
 

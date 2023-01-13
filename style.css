@@ -127,6 +127,7 @@
     background: black;
     color: white;
     overflow-y: hidden;
+    z-index: 2;
 }
 
 .game-div>* {
@@ -204,7 +205,7 @@
     margin-bottom: 10px;
 }
 
-.ship-img>img {
+.image {
     max-width: 40%;
 }
 
@@ -300,6 +301,37 @@
     padding: 0;
 }
 
+#aLaser,
+#myLaser {
+    position: absolute;
+    height: max-content;
+    background: transparent;
+}
+
+#aLaser {
+    z-index: -1;
+    top: 55%
+}
+
+#myLaser {
+    z-index: -1;
+    bottom: 27%;
+}
+
+#aLaser>img,
+#myLaser>img {
+    max-width: 9%;
+
+}
+
+#aLaser>img {
+    transform: rotate(37deg);
+}
+
+#myLaser>img {
+    transform: rotate(133deg);
+}
+
 #missile {
     background: black;
     border-radius: 10px;
@@ -347,7 +379,7 @@
         font-size: 2.0vw;
     }
 
-    .ship-img>img {
+    .image {
         max-width: 60%;
     }
 
